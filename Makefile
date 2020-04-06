@@ -47,7 +47,7 @@ LIBS:=$(LIBS) -nostdlib -lgcc
 .PHONY: build
 build:
 	mkdir -p ${KERNEL_BUILD_DIR}
-	${ASM} ${AFLAG} ${ARCH_DIR}/main.asm -o ${KERNEL_BUILD_DIR}/main.o
+	${ASM} ${AFLAG} ${ARCH_DIR}/boot.S -o ${KERNEL_BUILD_DIR}/main.o
 	${CPP} -c ${SRC_DIR}/kernel/kernel.cpp -o ${KERNEL_BUILD_DIR}/kernel.o ${CPPFLAGS}
 	${CC} -T ${ARCH_DIR}/linker.ld -o ${KERNEL_BUILD_DIR}/myos.bin ${CFLAGS} ${LIBS} ${LDFLAGS} ${KERNEL_BUILD_DIR}/*.o
 	rm ${KERNEL_BUILD_DIR}/*.o
@@ -78,7 +78,7 @@ qemu-run-bin: clean build
 # Run OS image on QEMU
 .PHONY: qemu-run-iso
 qemu-run-iso: clean ${BOOTLOADER}-iso
-	qemu-system-x86_64 -readconfig qemurc.txt
+	qemu-system-x86_64 -readconfig qemurc
 
 # Run kernel binaries on Bochs
 .PHONY: bochs-run-bin
@@ -89,7 +89,7 @@ bochs-run-bin: clean build
 # Run kernel binaries on Bochs
 .PHONY: bochs-run-iso
 bochs-run-iso: clean ${BOOTLOADER}-iso
-	bochs -f bochsrc.txt -q
+	bochs -f bochsrc -q
 
 # Run OS
 .PHONY: run
