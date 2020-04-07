@@ -1,11 +1,11 @@
 # Targeted CPU arch
 TARGET=i386
 
-# Source code directoy
-SRC_DIR=./kernel
+# OS source code directoy
+OS_DIR=./os
 
 # Arcgitecture specific source code directoy
-ARCH_DIR=${SRC_DIR}/arch/${TARGET}
+ARCH_DIR=${OS_DIR}/arch/${TARGET}
 
 # Base build directoy
 BUILD_DIR=./build/${TARGET}
@@ -34,7 +34,7 @@ AFLAG=-felf32
 # C++ cross-complier
 CPP=${TARGET}-elf-g++
 # C++ complier flags
-CPPFLAGS:=$(CPPFLAGS) -D__is_kernel -I${SRC_DIR}/include -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti
+CPPFLAGS:=$(CPPFLAGS) -D__is_kernel -I${OS_DIR}/include -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti
 
 # C cross-compier
 CC=${TARGET}-elf-gcc
@@ -81,7 +81,10 @@ $(KERNEL_BUILD_DIR)/crtbegin.o $(KERNEL_BUILD_DIR)/crtend.o:
 $(KERNEL_BUILD_DIR)/crt%.o: $(ARCH_DIR)/crt%.S
 	$(CC) -MD -c $< -o $@ $(CFLAGS) $(CPPFLAGS)
 
-${KERNEL_BUILD_DIR}/%.o: ${SRC_DIR}/kernel/%.cpp
+${KERNEL_BUILD_DIR}/%.o: ${OS_DIR}/kernel/%.c
+	$(CPP) -MD -c $< -o $@ $(CFLAGS) $(CPPFLAGS)
+
+${KERNEL_BUILD_DIR}/%.o: ${OS_DIR}/kernel/%.cpp
 	$(CPP) -MD -c $< -o $@ $(CFLAGS) $(CPPFLAGS)
 
 -include $(OBJS:.o=.d)

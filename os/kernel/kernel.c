@@ -93,7 +93,12 @@ void terminal_writestring(const char* data)
 {
 	terminal_write(data, strlen(data));
 }
- 
+
+/*
+	Extern "C" needed to disable name mangling by C++ compiler
+	for C code blocks. This prevents linking errors between C
+	and C++ code.
+*/ 
 extern "C" void kernel_main(void) 
 {
 	/* Initialize terminal interface */
