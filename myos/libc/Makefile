@@ -27,7 +27,7 @@ LIBK_CFLAGS:=$(CFLAGS)
 LIBK_CPPFLAGS:=$(CPPFLAGS) -D__is_libk
 
 # Arcgitecture specific source code directory
-ARCHDIR=../arch/$(TARGET)
+ARCHDIR=arch/$(TARGET)
 
 # Include arch specific config
 include $(ARCHDIR)/make.config
@@ -68,16 +68,25 @@ libc.a: $(OBJS)
 libk.a: $(LIBK_OBJS)
 	$(AR) rcs $@ $(LIBK_OBJS)
 
-.c.o:
+%.o: %.c
 	$(CC) -MD -c $< -o $@ -std=gnu11 $(CFLAGS) $(CPPFLAGS)
 
-.c.S:
+%.o: %.cpp
+	$(CPP) -MD -c $< -o $@ $(CFLAGS) $(CPPFLAGS)
+
+%.S: %.c
 	$(CC) -MD -c $< -o $@ $(CFLAGS) $(CPPFLAGS)
 
-.c.libk.o:
+%.S: %.cpp
+	$(CPP) -MD -c $< -o $@ $(CFLAGS) $(CPPFLAGS)
+
+%.libk.o: %.c
 	$(CC) -MD -c $< -o $@ -std=gnu11 $(LIBK_CFLAGS) $(LIBK_CPPFLAGS)
 
-.S.libk.o:
+%.libk.o: %.cpp
+	$(CPP) -MD -c $< -o $@ $(LIBK_CFLAGS) $(LIBK_CPPFLAGS)
+
+%.libk.o: %.S
 	$(CC) -MD -c $< -o $@ $(LIBK_CFLAGS) $(LIBK_CPPFLAGS)
 
 clean:

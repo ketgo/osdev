@@ -61,6 +61,10 @@ void terminal_write(const char *data, size_t size)
         terminal_putchar(data[i]);
 }
 
+#ifdef __cplusplus
+using namespace std;
+#endif
+
 void terminal_writestring(const char *data)
 {
     terminal_write(data, strlen(data));
