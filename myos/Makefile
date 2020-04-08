@@ -35,7 +35,7 @@ CFLAGS:=$(CFLAGS) -ffreestanding -Wall -Wextra -fno-exceptions
 # Linker flags
 LDFLAGS:=$(LDFLAGS)
 # List of libraries
-LIBS:=$(LIBS) -nostdlib -lgcc -lk
+LIBS:=$(LIBS) -nostdlib -lk
 
 # Include arch specific config
 include $(ARCHDIR)/make.config
@@ -80,7 +80,7 @@ myos.kernel: $(OBJS) $(ARCHDIR)/linker.ld
 
 # Get linkers default CRT begin and end object files
 $(ARCHDIR)/crtbegin.o $(ARCHDIR)/crtend.o:
-	OBJ=`$(CC) $(CFLAGS) $(LDFLAGS) -print-file-name=$(@F)` && cp "$$OBJ" $@
+	OBJ=`$(CPP) $(CFLAGS) $(LDFLAGS) -print-file-name=$(@F)` && cp "$$OBJ" $@
 
 # Compile NASM assemble code
 %.o: %.asm
@@ -88,12 +88,11 @@ $(ARCHDIR)/crtbegin.o $(ARCHDIR)/crtend.o:
 
 # Compile MIPS assembly code
 %.o: %.S
-	$(CC) -MD -c $< -o $@ $(CFLAGS) $(CPPFLAGS)
+	$(CPP) -MD -c $< -o $@ $(CFLAGS) $(CPPFLAGS)
 
 # Compile all C dependencies
 %.o: %.c
-	# Uses g++ to compile C code
-	$(CPP) -MD -c $< -o $@ -std=gnu11 $(CFLAGS) $(CPPFLAGS)
+	$(CC) -MD -c $< -o $@ -std=gnu11 $(CFLAGS) $(CPPFLAGS)
 
 # Compile all C++ dependencies
 %.o: %.cpp

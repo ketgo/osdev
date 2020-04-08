@@ -48,7 +48,7 @@ void *memset(void *bufptr, int value, size_t size)
     return bufptr;
 }
 
-size_t strlen(const char *str)
+size_t std::strlen(const char *str)
 {
     size_t len = 0;
     while (str[len])

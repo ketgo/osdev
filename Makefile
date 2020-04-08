@@ -43,11 +43,13 @@ export CPPFLAGS:=
 # Configure the cross-compiler to use the desired system root.
 export SYSROOT:=${BUILD_DIR}/sysroot
 export CC:=${CC} --sysroot=${SYSROOT}
+export CPP:=${CPP} --sysroot=${SYSROOT}
 
-# Work around that the -elf gcc targets doesn't have a system include directory
+# Work around that the -elf gcc/g++ targets doesn't have a system include directory
 # because it was configured with --without-headers rather than --with-sysroot.
 ifneq (,$(findstring elf,${HOST}))
   export CC:=${CC} -isystem=${INCLUDEDIR}
+  export CPP:=${CPP} -isystem=${INCLUDEDIR}
 endif
 
 .PHONEY: build clean run

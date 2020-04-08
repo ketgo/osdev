@@ -3,4 +3,10 @@
 
 #define __myos_libc 1
 
+/*
+    std namespace scope
+*/
+#define __BEGIN_NAMESPACE_STD namespace std {
+#define __END_NAMESPACE_STD }
+
 #endif
