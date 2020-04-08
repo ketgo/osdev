@@ -16,7 +16,7 @@ static size_t terminal_column;
 static uint8_t terminal_color;
 static uint16_t *terminal_buffer;
 
-void terminal_initialize(void)
+void terminal::initialize(void)
 {
     terminal_row = 0;
     terminal_column = 0;
@@ -43,7 +43,7 @@ void terminal_putentryat(unsigned char c, uint8_t color, size_t x, size_t y)
     terminal_buffer[index] = vga_entry(c, color);
 }
 
-void terminal_putchar(char c)
+void terminal::putc(char c)
 {
     unsigned char uc = c;
     terminal_putentryat(uc, terminal_color, terminal_column, terminal_row);
@@ -55,13 +55,10 @@ void terminal_putchar(char c)
     }
 }
 
-void terminal_write(const char *data, size_t size)
+void terminal::puts(const char *data)
 {
-    for (size_t i = 0; i < size; i++)
-        terminal_putchar(data[i]);
-}
+    size_t size = std::strlen(data);
 
-void terminal_writestring(const char *data)
-{
-    terminal_write(data, std::strlen(data));
+    for (size_t i = 0; i < size; i++)
+        terminal::putc(data[i]);
 }

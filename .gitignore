@@ -55,3 +55,6 @@ build/
 # VSCode
 .vscode
 *.code-workspace
+
+# Kernel Image
+myos.kernel

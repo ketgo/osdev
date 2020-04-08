@@ -12,8 +12,8 @@
 extern "C" void kernel_main(void)
 {
 	/* Initialize terminal interface */
-	terminal_initialize();
+	terminal::initialize();
 
 	/* Newline support is left as an exercise. */
-	terminal_writestring("Hello, kernel World!\n");
+	terminal::puts("Hello, kernel World!\n");
 }
