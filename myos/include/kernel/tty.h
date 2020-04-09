@@ -26,14 +26,6 @@ void initialize(void);
 void putc(char c);
 
 /**
- * Write collection of char at an address on terminal.
- * 
- * @param data pointer to memory address of first char
- * @param size number of char to write on terminal
- */
-void writevp(const char *data, size_t size);
-
-/**
  * Write string of chars on terminal.
  * 
  * @param data pointer to memory address of the first char
