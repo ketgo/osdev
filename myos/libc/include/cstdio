@@ -1,0 +1,12 @@
+#ifndef _CSTDIO_
+#define _CSTDIO_
+
+#include <sys/cdefs.h>
+
+__BEGIN_NAMESPACE_STD
+extern "C" {
+#include <stdio.h>
+}
+__END_NAMESPACE_STD
+
+#endif /* CSTDIO */

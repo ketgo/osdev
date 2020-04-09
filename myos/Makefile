@@ -20,7 +20,10 @@ EXEC_PREFIX?=$(PREFIX)
 BOOTDIR?=$(EXEC_PREFIX)/boot
 INCLUDEDIR?=$(PREFIX)/include
 
-# Arcgitecture specific source code directory
+# Kernel specific source code directory
+KERNEL_DIR=kernel
+
+# Architecture specific source code directory
 ARCHDIR=arch/${TARGET}
 
 # NASM assembler
@@ -35,7 +38,7 @@ CFLAGS:=$(CFLAGS) -ffreestanding -Wall -Wextra -fno-exceptions
 # Linker flags
 LDFLAGS:=$(LDFLAGS)
 # List of libraries
-LIBS:=$(LIBS) -nostdlib -lk
+LIBS:=$(LIBS) -nostdlib -lgcc -lk
 
 # Include arch specific config
 include $(ARCHDIR)/make.config
@@ -46,10 +49,13 @@ CPPFLAGS:=$(CPPFLAGS) $(KERNEL_ARCH_CPPFLAGS)
 LDFLAGS:=$(LDFLAGS) $(KERNEL_ARCH_LDFLAGS)
 LIBS:=$(LIBS) $(KERNEL_ARCH_LIBS)
 
+# Include kernel specific config
+include $(KERNEL_DIR)/make.config
+
 # Kernel compile objects
-KERNEL_OBJS=\
+KERNEL_OBJS:=\
 $(KERNEL_ARCH_OBJS) \
-kernel/kernel.o \
+${KERNEL_OBJS} \
 
 # All compile ojects
 OBJS=\

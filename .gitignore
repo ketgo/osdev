@@ -57,4 +57,4 @@ build/
 *.code-workspace
 
 # Kernel Image
-myos.kernel
+*.kernel

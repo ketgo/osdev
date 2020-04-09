@@ -3,6 +3,7 @@
 #include <stdint.h>
 
 #include <kernel/tty.h>
+#include <kernel/printk.h>
 
 /*
 	Extern "C" needed to disable name mangling by C++ compiler
@@ -12,8 +13,8 @@
 extern "C" void kernel_main(void)
 {
 	/* Initialize terminal interface */
-	terminal::initialize();
+	// kernel::TTY tty;
 
 	/* Newline support is left as an exercise. */
-	terminal::puts("Hello, kernel World!\n");
+	kernel::printk("Hello, kernel World!\n");
 }
