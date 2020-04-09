@@ -1,0 +1,13 @@
+#ifndef _CSTRING_
+#define _CSTRING_
+
+#include <sys/cdefs.h>
+
+__BEGIN_NAMESPACE_STD
+extern "C"
+{
+#include <string.h>
+}
+__END_NAMESPACE_STD
+
+#endif /* CSTRING */
