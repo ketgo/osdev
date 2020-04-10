@@ -1,8 +1,3 @@
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
-
-#include <kernel/tty.h>
 #include <kernel/printk.h>
 
 /*
@@ -15,8 +10,6 @@ extern "C" void start_kernel(void)
 	/**
 	 * Kernel start entry point.
 	 */
-	/* Initialize terminal interface */
-	// kernel::TTY tty;
 
 	/* Newline support is left as an exercise. */
 	kernel::printk("Hello, kernel World!\n");

@@ -1,5 +1,6 @@
 #include <termios.h>
 #include <stddef.h>
+#include <stdint.h>
 
 #include <kernel/tty.h>
 
@@ -32,11 +33,18 @@ void kernel::TTY::init()
     tty_attr_init(&this->attr);
 }
 
-int kernel::TTY::write(const char *buffer, unsigned int n)
+int kernel::TTY::putc(int c)
+{
+    /** TODO: Interface with console */
+    return 0;
+}
+
+int kernel::TTY::write(const char *buffer, size_t n)
 {
     size_t i;
 
-    for(i=0; i<n; i++) {
+    for (i = 0; i < n; i++)
+    {
         if (this->putc(((const unsigned char *)buffer)[i]) < 0)
             break;
     }

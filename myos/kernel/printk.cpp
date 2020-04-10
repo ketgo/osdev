@@ -1,4 +1,5 @@
 #include <stdarg.h>
+#include <stddef.h>
 #include <cstdio>
 
 #include <kernel/tty.h>
@@ -16,7 +17,7 @@ void printvk(const char *fmt, va_list arg)
 
     n = std::vsnprintf(str, KPRINTF_BUFSIZ, fmt, arg);
     if (n > 0)
-        kernel::tty.write(str, n);
+        kernel::tty.write(str, (size_t)n);
 }
 
 void kernel::printk(const char *__restrict fmt, ...)

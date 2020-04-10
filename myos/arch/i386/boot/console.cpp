@@ -1,10 +1,10 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <string.h>
+#include <cstring>
 
-#include <kernel/tty.h>
-#include <asm/vga.h>
+#include <boot/vga.h>
+#include <boot/console.h>
 
 static const size_t VGA_WIDTH = 80;
 static const size_t VGA_HEIGHT = 25;
@@ -26,7 +26,7 @@ void terminal_putentryat(unsigned char c, uint8_t color, size_t x, size_t y)
     terminal_buffer[index] = vga_entry(c, color);
 }
 
-void initialize(void)
+void terminal_initialize(void)
 {
     terminal_row = 0;
     terminal_column = 0;
@@ -42,7 +42,7 @@ void initialize(void)
     }
 }
 
-int kernel::TTY::putc(int c)
+void terminal_putchar(int c)
 {
     unsigned char uc = (unsigned char)c;
     terminal_putentryat(uc, terminal_color, terminal_column, terminal_row);
@@ -52,5 +52,13 @@ int kernel::TTY::putc(int c)
         if (++terminal_row == VGA_HEIGHT)
             terminal_row = 0;
     }
-    return 0;
+}
+
+void terminal_puts(const char* data, size_t size) {
+	for (size_t i = 0; i < size; i++)
+		terminal_putchar(data[i]);
+}
+
+void terminal_putsv(const char* data) {
+	terminal_puts(data, std::strlen(data));
 }

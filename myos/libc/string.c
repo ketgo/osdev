@@ -1,8 +1,8 @@
 #include <stddef.h>
 
-#include <cstring>
+#include "string.h"
 
-int std::memcmp(const void *aptr, const void *bptr, size_t size)
+int memcmp(const void *aptr, const void *bptr, size_t size)
 {
     const unsigned char *a = (const unsigned char *)aptr;
     const unsigned char *b = (const unsigned char *)bptr;
@@ -16,7 +16,7 @@ int std::memcmp(const void *aptr, const void *bptr, size_t size)
     return 0;
 }
 
-void *std::memcpy(void *__restrict dstptr, const void *__restrict srcptr, size_t size)
+void *memcpy(void *__restrict dstptr, const void *__restrict srcptr, size_t size)
 {
     unsigned char *dst = (unsigned char *)dstptr;
     const unsigned char *src = (const unsigned char *)srcptr;
@@ -25,7 +25,7 @@ void *std::memcpy(void *__restrict dstptr, const void *__restrict srcptr, size_t
     return dstptr;
 }
 
-void *std::memmove(void *dstptr, const void *srcptr, size_t size)
+void *stmemmove(void *dstptr, const void *srcptr, size_t size)
 {
     unsigned char *dst = (unsigned char *)dstptr;
     const unsigned char *src = (const unsigned char *)srcptr;
@@ -42,7 +42,7 @@ void *std::memmove(void *dstptr, const void *srcptr, size_t size)
     return dstptr;
 }
 
-void *std::memset(void *bufptr, int value, size_t size)
+void *memset(void *bufptr, int value, size_t size)
 {
     unsigned char *buf = (unsigned char *)bufptr;
     for (size_t i = 0; i < size; i++)
@@ -50,7 +50,7 @@ void *std::memset(void *bufptr, int value, size_t size)
     return bufptr;
 }
 
-size_t std::strlen(const char *str)
+size_t strlen(const char *str)
 {
     size_t len = 0;
     while (str[len])

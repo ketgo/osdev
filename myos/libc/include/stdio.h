@@ -33,7 +33,7 @@
 * @param arg A value identifying a variable arguments list initialized with va_start. va_list is a 
 *   special type defined in <stdarg.h>.
 */
-int vsnprintf(char *s, size_t n, const char *__restrict format, va_list arg);
+int vsnprintf(char *s, size_t n, const char * format, va_list arg);
 
 /**
  * Write formatted output to sized buffer
@@ -58,6 +58,6 @@ int vsnprintf(char *s, size_t n, const char *__restrict format, va_list arg);
  * @param format C string that contains a format string that follows the same specifications as format 
  *   in printf (see printf for details).
  */
-int snprintf(char *s, size_t n, const char *__restrict format, ...);
+int snprintf(char *s, size_t n, const char * format, ...);
 
 #endif

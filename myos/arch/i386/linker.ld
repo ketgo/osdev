@@ -1,13 +1,18 @@
 /* The bootloader will look at this image and start execution at the symbol
    designated as the entry point. */
 ENTRY(_start)
+/*
+	Output format and aechitecture.
+*/
+OUTPUT_FORMAT("elf32-i386", "elf32-i386", "elf32-i386")
+OUTPUT_ARCH(i386)
  
 /* Tell where the various sections of the object files will be put in the final
    kernel image. */
 SECTIONS
 {
 	/* Begin putting sections at 1 MiB, a conventional place for kernels to be
-	   loaded at by the bootloader. */
+	   loaded at by the bootloader. Useful for debugging */
 	. = 1M;
  
 	/* First put the multiboot header, as it is required to be put very early

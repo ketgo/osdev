@@ -2,6 +2,8 @@
 #define KERNEL_TTY_H
 
 #include <termios.h>
+#include <stddef.h>
+#include <stdint.h>
 
 namespace kernel
 {
@@ -21,8 +23,8 @@ private:
 
     struct termios attr;    /* termios attributes */
     char buffer[MAX_CANON]; /*<< Canonical input line */
-    unsigned int read_pos;  /*<< Input line position to read */
-    unsigned int write_pos; /*<< Input line position to write */
+    size_t read_pos;  /*<< Input line position to read */
+    size_t write_pos; /*<< Input line position to write */
 
 public:
     /**
@@ -45,7 +47,7 @@ public:
     * @param n number of char to write
     * @returns number of characters written
     */
-    int write(const char *buffer, unsigned int n);
+    int write(const char *buffer, size_t n);
 
     /**
      * Constructor to initialize tty
@@ -53,6 +55,10 @@ public:
     TTY() { this->init(); }
 }; 
 
+/**
+ * TTY object to interface with console
+ * TODO: Add class to interface with multiple tty
+ */
 static TTY tty;
 
 } // namespace kernel
