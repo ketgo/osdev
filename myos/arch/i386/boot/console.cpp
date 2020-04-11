@@ -1,64 +1,89 @@
-#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <stdarg.h>
 #include <cstring>
+#include <cstdio>
 
 #include <boot/vga.h>
 #include <boot/console.h>
 
-static const size_t VGA_WIDTH = 80;
-static const size_t VGA_HEIGHT = 25;
-static uint16_t *const VGA_MEMORY = (uint16_t *)0xB8000;
+boot::Console boot::console;
 
-static size_t terminal_row;
-static size_t terminal_column;
-static uint8_t terminal_color;
-static uint16_t *terminal_buffer;
-
-void terminal_setcolor(uint8_t color)
+void boot::Console::initialize(enum VGAColor fg_color, enum VGAColor bg_color)
 {
-    terminal_color = color;
-}
-
-void terminal_putentryat(unsigned char c, uint8_t color, size_t x, size_t y)
-{
-    const size_t index = y * VGA_WIDTH + x;
-    terminal_buffer[index] = vga_entry(c, color);
-}
-
-void terminal_initialize(void)
-{
-    terminal_row = 0;
-    terminal_column = 0;
-    terminal_color = vga_entry_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
-    terminal_buffer = VGA_MEMORY;
+    this->row = 0;
+    this->column = 0;
+    this->color = fg_color | bg_color << 4;
+    this->buffer = (uint16_t *)VGA_CGA_MEMORY;
     for (size_t y = 0; y < VGA_HEIGHT; y++)
     {
         for (size_t x = 0; x < VGA_WIDTH; x++)
         {
             const size_t index = y * VGA_WIDTH + x;
-            terminal_buffer[index] = vga_entry(' ', terminal_color);
+            this->buffer[index] = ' ' | (uint16_t)this->color << 8;
         }
     }
 }
 
-void terminal_putchar(int c)
+void boot::Console::set_fg_color(enum VGAColor color)
+{
+    this->color = color | this->color << 4;
+}
+
+void boot::Console::set_bg_color(enum VGAColor color)
+{
+    this->color = this->color | color << 4;
+}
+
+int boot::Console::putchar(int c)
 {
     unsigned char uc = (unsigned char)c;
-    terminal_putentryat(uc, terminal_color, terminal_column, terminal_row);
-    if (++terminal_column == VGA_WIDTH)
+    const size_t index = this->row * VGA_WIDTH + this->column;
+
+    this->buffer[index] = uc | (uint16_t)this->color << 8;
+    if (++this->column == VGA_WIDTH)
     {
-        terminal_column = 0;
-        if (++terminal_row == VGA_HEIGHT)
-            terminal_row = 0;
+        this->column = 0;
+        if (++this->row == VGA_HEIGHT)
+        {
+            this->row = 0;
+        }
+        else
+        {
+            this->row++;
+        }
     }
+
+    return 1;
 }
 
-void terminal_puts(const char* data, size_t size) {
-	for (size_t i = 0; i < size; i++)
-		terminal_putchar(data[i]);
+int boot::Console::puts(const char *s)
+{
+    int written;
+    size_t size = std::strlen(s);
+
+    for (size_t i = 0, written = 0; i < size; i++, written++)
+    {
+        if (s[i] == '\n')
+        {
+            this->column = 0;
+            this->row++;
+            continue;
+        }
+        this->putchar(s[i]);
+    }
+
+    return written;
 }
 
-void terminal_putsv(const char* data) {
-	terminal_puts(data, std::strlen(data));
+int boot::Console::printf(const char *s, ...)
+{
+    char buff[VGA_WIDTH];
+    va_list args;
+
+    va_start(args, s);
+    std::vsnprintf(buff, VGA_WIDTH, s, args);
+    va_end(args);
+
+    return this->puts(buff);
 }

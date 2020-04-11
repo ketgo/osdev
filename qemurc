@@ -4,4 +4,3 @@
   media = "disk"
   index = "0"
   file = "./build/i386/img/myos.iso"
-

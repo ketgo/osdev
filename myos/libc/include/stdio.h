@@ -31,9 +31,10 @@
 * @param format C string that contains a format string that follows the same specifications as format 
 *   in printf (see printf for details).
 * @param arg A value identifying a variable arguments list initialized with va_start. va_list is a 
-*   special type defined in <stdarg.h>.
+*   special type defined in <stdarg.h>. 
+* @returns number of char written to sized buffer
 */
-int vsnprintf(char *s, size_t n, const char * format, va_list arg);
+int vsnprintf(char *s, size_t n, const char *format, va_list arg);
 
 /**
  * Write formatted output to sized buffer
@@ -55,9 +56,9 @@ int vsnprintf(char *s, size_t n, const char * format, va_list arg);
  * @param n Maximum number of bytes to be used in the buffer. The generated string has a length of 
  *   at most n-1, leaving space for the additional terminating null character. size_t is an unsigned 
  *   integral type.
- * @param format C string that contains a format string that follows the same specifications as format 
- *   in printf (see printf for details).
+ * @param format C string that contains a format string.
+ * @returns number of char written to sized buffer
  */
-int snprintf(char *s, size_t n, const char * format, ...);
+int snprintf(char *s, size_t n, const char *format, ...);
 
 #endif

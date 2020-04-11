@@ -12,9 +12,8 @@ extern "C" void start_kernel(void);
  */
 extern "C" void main(void) {
 
-    terminal_initialize();
-
-    terminal_putsv("Initial bootstrap started...\n");
+    boot::console.initialize(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
+    boot::console.printf("Initial bootstrap started...\nSetting up GDT...");
 
     start_kernel();
 }

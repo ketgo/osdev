@@ -4,7 +4,7 @@
 
 #include <kernel/tty.h>
 
-static kernel::TTY tty;
+kernel::TTY kernel::tty;
 
 static void tty_attr_init(struct termios *termptr)
 {

@@ -59,7 +59,7 @@ public:
  * TTY object to interface with console
  * TODO: Add class to interface with multiple tty
  */
-static TTY tty;
+extern TTY tty;
 
 } // namespace kernel
 
