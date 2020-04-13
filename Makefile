@@ -77,7 +77,7 @@ clean:
 # Install grub
 grub: build
 	mkdir -p ${SYSROOT}/boot/grub
-	cp bootloader/grub/grub.cfg ${SYSROOT}/boot/grub/grub.cfg
+	cp bootloaders/grub/grub.cfg ${SYSROOT}/boot/grub/grub.cfg
 
 # Create OS grub ISO image
 grub-iso: grub

@@ -1,4 +1,5 @@
 #include <boot/console.h>
+#include <boot/gdt.h>
 
 
 /**
@@ -12,8 +13,11 @@ extern "C" void start_kernel(void);
  */
 extern "C" void main(void) {
 
-    boot::console.initialize(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
-    boot::console.printf("Initial bootstrap started...\nSetting up GDT...");
+    boot::console.initialize(VGA_COLOR_BLACK, VGA_COLOR_LIGHT_GREY);
+    boot::console.printf("Kernel boot sequence started...\n");
+    
+    boot::console.printf("Setting up GDT...\n");
+    boot::gdt.initialize();
 
     start_kernel();
 }

@@ -59,10 +59,10 @@ int boot::Console::putchar(int c)
 
 int boot::Console::puts(const char *s)
 {
-    int written;
+    int written = 0;
     size_t size = std::strlen(s);
 
-    for (size_t i = 0, written = 0; i < size; i++, written++)
+    for (size_t i = 0; i < size; i++)
     {
         if (s[i] == '\n')
         {
@@ -71,6 +71,7 @@ int boot::Console::puts(const char *s)
             continue;
         }
         this->putchar(s[i]);
+        written++;
     }
 
     return written;
