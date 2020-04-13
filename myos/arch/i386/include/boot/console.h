@@ -1,5 +1,5 @@
-#ifndef CONSOLE_H
-#define CONSOLE_H
+#ifndef ARCH_I386_CONSOLE_H
+#define ARCH_I386_CONSOLE_H
 
 #include <stddef.h>
 #include <stdint.h>
@@ -69,4 +69,4 @@ extern Console console;
 
 } // namespace boot
 
-#endif /* CONSOLE_H */
+#endif /* ARCH_I386_CONSOLE_H */

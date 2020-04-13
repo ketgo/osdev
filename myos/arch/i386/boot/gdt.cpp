@@ -122,4 +122,30 @@ void boot::GDT::flush()
 
 void boot::GDT::initialize()
 {
+    /**
+     * As required by x86 processors, set first descriptor as NULL 
+     * descriptor.
+     */
+    this->_gdt[0].set_base(0);
+    this->_gdt[0].set_limit(0);
+    this->_gdt[0].set_access(0);
+    this->_gdt[0].set_flags(0);
+
+    /**
+     * Setting default code descriptor.
+     */
+    this->_gdt[1].set_base(0);
+    this->_gdt[1].set_limit(0xffffffff);
+    this->_gdt[1].set_access(GDT_DESC_ACCESS_CD_SEG | GDT_DESC_ACCESS_EXEC | GDT_DESC_ACCESS_RW | GDT_DESC_ACCESS_P);
+    this->_gdt[1].set_flags(GDT_DESC_FLAG_GR | GDT_DESC_FLAG_SZ);
+
+    /**
+     * Setting default data descriptor.
+     */
+    this->_gdt[2].set_base(0);
+    this->_gdt[2].set_limit(0xffffffff);
+    this->_gdt[2].set_access(GDT_DESC_ACCESS_CD_SEG | GDT_DESC_ACCESS_RW | GDT_DESC_ACCESS_P);
+    this->_gdt[2].set_flags(GDT_DESC_FLAG_GR | GDT_DESC_FLAG_SZ);
+
+    this->flush();
 }

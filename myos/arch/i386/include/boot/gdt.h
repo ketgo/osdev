@@ -157,6 +157,14 @@ namespace boot
 #define GDT_DESC_ACCESS_DPL_RING_3 0x60
 
 /**
+ * Present bit.
+ *  
+ * This must be 1 for all valid selectors.
+ */
+#define GDT_DESC_ACCESS_P 0x80
+
+
+/**
  * Enumerated list of GDT descriptor flag bits.
  */
 

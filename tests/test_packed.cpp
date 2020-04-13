@@ -22,6 +22,9 @@ private:
     unsigned char a;
     int b;
 
+protected:
+    int c;
+
 public:
     void set_a(unsigned char uc) { a = uc; }
     unsigned char get_a() { return a; }
@@ -29,7 +32,13 @@ public:
     int get_b() { return b; }
 };
 
-int main()
+class DerivedClass : protected PackedClass
+{
+
+};
+
+int
+main()
 {
     PackedClass pc;
     pc.set_a('a');
@@ -37,8 +46,9 @@ int main()
 
     assert(sizeof(UnPackedStruct) == 8);
     assert(sizeof(PackedStruct) == 5);
-    assert(sizeof(PackedClass) == 5);
-    assert(sizeof(pc) == 5);
+    assert(sizeof(PackedClass) == 9);
+    assert(sizeof(pc) == 9);
+    assert(sizeof(DerivedClass) == 9);
 
     return 0;
 }
