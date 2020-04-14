@@ -90,8 +90,8 @@
  * AVL: Bit available for systems programers.
  */
 
-#ifndef ARCH_I386_GDT_H
-#define ARCH_I386_GDT_H
+#ifndef ARCH_I386_GDT_HPP
+#define ARCH_I386_GDT_HPP
 
 #include <stdint.h>
 
@@ -304,4 +304,4 @@ extern GDT gdt;
 
 } // namespace boot
 
-#endif /* ARCH_I386_GDT_H */
+#endif /* ARCH_I386_GDT_HPP */

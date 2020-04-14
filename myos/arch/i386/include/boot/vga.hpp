@@ -1,5 +1,5 @@
-#ifndef ARCH_I386_VGA_H
-#define ARCH_I386_VGA_H
+#ifndef ARCH_I386_VGA_HPP
+#define ARCH_I386_VGA_HPP
 
 /**
  * VGA real mode memory location and attributes. 
@@ -41,4 +41,4 @@ enum VGAColor
 	VGA_COLOR_WHITE = 15
 };
 
-#endif
+#endif /* ARCH_I386_VGA_HPP */

@@ -1,9 +1,9 @@
-#ifndef ARCH_I386_CONSOLE_H
-#define ARCH_I386_CONSOLE_H
+#ifndef ARCH_I386_CONSOLE_HPP
+#define ARCH_I386_CONSOLE_HPP
 
 #include <stddef.h>
 #include <stdint.h>
-#include <boot/vga.h>
+#include <boot/vga.hpp>
 
 namespace boot
 {
@@ -69,4 +69,4 @@ extern Console console;
 
 } // namespace boot
 
-#endif /* ARCH_I386_CONSOLE_H */
+#endif /* ARCH_I386_CONSOLE_HPP */

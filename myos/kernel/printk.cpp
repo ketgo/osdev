@@ -2,8 +2,8 @@
 #include <stddef.h>
 #include <cstdio>
 
-#include <kernel/tty.h>
-#include <kernel/printk.h>
+#include <kernel/tty.hpp>
+#include <kernel/printk.hpp>
 
 #define KPRINTF_BUFSIZ 64
 

@@ -1,6 +1,6 @@
-#include <boot/console.h>
-#include <boot/gdt.h>
-#include <boot/pm.h>
+#include <boot/console.hpp>
+#include <boot/gdt.hpp>
+#include <boot/pm.hpp>
 
 void boot::start_protected_mode()
 {

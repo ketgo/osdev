@@ -4,8 +4,8 @@
 #include <cstring>
 #include <cstdio>
 
-#include <boot/vga.h>
-#include <boot/console.h>
+#include <boot/vga.hpp>
+#include <boot/console.hpp>
 
 boot::Console boot::console;
 

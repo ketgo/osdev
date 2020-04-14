@@ -1,4 +1,4 @@
-#include <kernel/printk.h>
+#include <kernel/printk.hpp>
 
 /*
 	Extern "C" needed to disable name mangling by C++ compiler

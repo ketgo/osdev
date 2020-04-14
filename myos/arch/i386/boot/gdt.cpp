@@ -1,6 +1,6 @@
 #include <stdint.h>
 
-#include <boot/gdt.h>
+#include <boot/gdt.hpp>
 
 void boot::GDTDescriptor::set_base(uint32_t base)
 {

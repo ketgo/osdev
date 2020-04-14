@@ -54,6 +54,11 @@ _start:
 	; stack (as it grows downwards on x86 systems). This is necessarily done
 	; in assembly as languages such as C cannot function without a stack.
 	mov esp, stack_top
+
+	; Push the multiboot information for the kernel entrypoint. As per the 
+	; multiboot specification the address to this information is stored in 
+	; the ebx register.
+	push dword ebx
  
 	; This is a good place to initialize crucial processor state before the
 	; high-level kernel is entered. It's best to minimize the early
@@ -70,9 +75,14 @@ _start:
 	; aligned above and we've since pushed a multiple of 16 bytes to the
 	; stack since (pushed 0 bytes so far) and the alignment is thus
 	; preserved and the call is well defined.
-        ; note, that if you are building on Windows, C functions may have "_" prefix in assembly: _kernel_main
+        ; note, that if you are building on Windows, C functions may have "_" prefix in assembly: _main
 	extern main
 	call main
+
+	; Pop multiboot header from stack. Even though it does not matter here
+	; since the system will be put into an infinte loop from this point, its
+	; good practice to do so.
+	add esp, 4
  
 	; If the system has nothing more to do, put the computer into an
 	; infinite loop. To do that:

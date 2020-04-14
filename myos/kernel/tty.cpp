@@ -2,7 +2,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <kernel/tty.h>
+#include <kernel/tty.hpp>
 
 kernel::TTY kernel::tty;
 
