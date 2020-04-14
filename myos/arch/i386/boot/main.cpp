@@ -19,7 +19,7 @@ extern "C" void main(boot::MultibootInfo *multiboot_info)
     boot::console.initialize(VGA_COLOR_BLACK, VGA_COLOR_LIGHT_GREY);
     boot::console.printf("Kernel boot sequence started...\n");
 
-    boot::console.printf("Multiboot info flags: %d\n", multiboot_info->m_flags)
+    boot::console.printf("Multiboot info flags: %d\n", multiboot_info->m_flags);
 
     /* Start protected mode in case not already */
     boot::console.printf("Starting protected mode...\n");
