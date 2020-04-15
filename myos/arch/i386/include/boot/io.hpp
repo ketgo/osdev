@@ -14,21 +14,21 @@ namespace boot
  * 
  * This method disables all system interrupts.
  */
-inline void cli();
+void cli();
 
 /**
  * Enable interupts.
  * 
  * This method enables all system interrupts.
  */
-inline void sti();
+void sti();
 
 /**
  * Repeated NOP operation.
  * 
  * Utility method to perform a repeated nop operation.
  */
-inline void rep_nop();
+void rep_nop();
 
 /**
  * Delay I/O
@@ -41,7 +41,7 @@ inline void rep_nop();
  * 
  * ref: https://stackoverflow.com/questions/6793899/what-does-the-0x80-port-address-connect-to
  */
-inline void io_delay(void);
+void io_delay(void);
 
 /** 
  * Output byte value on port.
@@ -49,7 +49,7 @@ inline void io_delay(void);
  * @param  value byte value to output
  * @param port port number
  */
-inline void outb(uint8_t value, uint16_t port);
+void outb(uint8_t value, uint16_t port);
 
 /**
  * Input byte value from port.
@@ -57,7 +57,7 @@ inline void outb(uint8_t value, uint16_t port);
  * @param port port number
  * @returns byte value at port
  */
-inline uint8_t inb(uint16_t port);
+uint8_t inb(uint16_t port);
 
 /** 
  * Output 2-byte value on port.
@@ -65,7 +65,7 @@ inline uint8_t inb(uint16_t port);
  * @param  value 2-byte value to output
  * @param port port number
  */
-inline void outw(uint16_t value, uint16_t port);
+void outw(uint16_t value, uint16_t port);
 
 /**
  * Input 2-byte value from port.
@@ -73,7 +73,7 @@ inline void outw(uint16_t value, uint16_t port);
  * @param port port number
  * @returns 2-byte value at port
  */
-inline uint16_t inw(uint16_t port);
+uint16_t inw(uint16_t port);
 
 /** 
  * Output 4-byte value on port.
@@ -81,7 +81,7 @@ inline uint16_t inw(uint16_t port);
  * @param  value 4-byte value to output
  * @param port port number
  */
-inline void outl(uint32_t value, uint16_t port);
+void outl(uint32_t value, uint16_t port);
 
 /**
  * Input 4-byte value from port.
@@ -89,7 +89,7 @@ inline void outl(uint32_t value, uint16_t port);
  * @param port port number
  * @returns 4-byte value at port
  */
-inline uint32_t inl(uint16_t port);
+uint32_t inl(uint16_t port);
 
 } // namespace boot
 

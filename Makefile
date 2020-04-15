@@ -102,4 +102,4 @@ bochs-run-iso: ${BOOTLOADER}-iso
 	bochs -f bochsrc -q
 
 # Run OS
-run: clean ${EMU}-run-${OS_IMG_FORMAT}
+run: ${EMU}-run-${OS_IMG_FORMAT} clean

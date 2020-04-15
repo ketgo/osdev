@@ -117,7 +117,26 @@ void boot::GDT::flush()
     gdt_reg.limit = sizeof(this->_gdt) - 1;
     gdt_reg.base = (uint32_t)this->_gdt;
 
-    asm volatile("lgdtl   %0\n\t" ::"m"(gdt_reg));
+    asm volatile("lgdtl   %0\n\t"
+                 /** 
+                 * Kernel data segment is set at an offset of 16 bytes, which is 
+                 * 0x10 in hex, from the base address of the array of global
+                 * descripters. This is set in the initialize() method.
+                 */
+                 "movl    $0x10, %%eax\n\t"
+                 "movl    %%eax, %%ds\n\t"
+                 "movl    %%eax, %%es\n\t"
+                 "movl    %%eax, %%fs\n\t"
+                 "movl    %%eax, %%gs\n\t"
+                 "movl    %%eax, %%ss\n\t"
+                 /** 
+                 * Kernel code segment is set at an offset of 8 bytes, which is 
+                 * 0x10 in hex, from the base address of the array of global
+                 * descripters. This is set in the initialize() method.
+                 */
+                 "ljmpl    $0x08, $1f\n\t"
+                 "1:\n\t" 
+                 ::"m"(gdt_reg));
 }
 
 void boot::GDT::initialize()
