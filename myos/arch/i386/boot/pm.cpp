@@ -1,6 +1,3 @@
-#include <boot/console.hpp>
-#include <boot/gdt.hpp>
-#include <boot/io.hpp>
 #include <boot/pm.hpp>
 
 /**
@@ -25,27 +22,10 @@
  * 
  * The important bit here is bit 0.
  */
-static void set_protected_mode()
-{
-    asm volatile(
-        "movl %eax, %cr0\n\t"
-        "orb $1, %eax\n\t"
-        "movl %cr0, %eax\n\t");
-}
-
 void boot::start_protected_mode()
 {
-    /** 
-     * Disabling inturupts if not already. Interupts in protected mode 
-     * will cause the processor to triple fault as IDT are still not set.
-     */
-    boot::cli();
-
-    /* Setup GDT */
-    boot::console.printf("Setting up GDT...\n");
-    boot::gdt.initialize();
-
-    /* Set the system in protected mode */
-    boot::console.printf("Setting protected mode...\n");
-    set_protected_mode();
+    asm volatile(
+        "movl %cr0, %eax\n\t"
+        "orb $1, %eax\n\t"
+        "movl %eax, %cr0\n\t");
 }

@@ -1,4 +1,5 @@
 #include <kernel/printk.hpp>
+#include <kernel/irq.hpp>
 
 /*
 	Extern "C" needed to disable name mangling by C++ compiler
@@ -11,6 +12,7 @@ extern "C" void start_kernel(void)
 	 * Kernel start entry point.
 	 */
 
-	/* Newline support is left as an exercise. */
 	kernel::printk("Hello, kernel World!\n");
+
+	for(;;);
 }

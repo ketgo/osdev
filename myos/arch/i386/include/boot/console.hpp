@@ -39,6 +39,19 @@ public:
     void set_bg_color(VGAColor color);
 
     /**
+     * Clear screen
+     */
+    void clrscr();
+
+    /**
+     * Goto postion (column, row) on screen
+     * 
+     * @param column column number to goto on screen
+     * @param row row number to goto on screen
+     */
+    void gotoxy(size_t column, size_t row);
+
+    /**
      * Display a char on console
      * 
      * @param c char to display

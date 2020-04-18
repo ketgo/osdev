@@ -25,7 +25,7 @@ BOOTLOADER=grub
 
 # Emulator to use
 EMU=qemu
-#EMU=bochs
+EMU=bochs
 
 export AR:=${HOST}-ar
 export AS:=${HOST}-as
@@ -102,4 +102,4 @@ bochs-run-iso: ${BOOTLOADER}-iso
 	bochs -f bochsrc -q
 
 # Run OS
-run: ${EMU}-run-${OS_IMG_FORMAT} clean
+run: clean ${EMU}-run-${OS_IMG_FORMAT}

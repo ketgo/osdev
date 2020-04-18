@@ -113,30 +113,22 @@ void boot::GDT::flush()
        see: https://github.com/torvalds/linux/blob/0adb32858b0bddf4ada5f364a84ed60b196dbcda/arch/x86/boot/pm.c#L84 
     */
     static GDTRegister gdt_reg;
+    uint32_t kernel_code_segment = boot::KERNEL_CODE_SEGMENT;
+    uint32_t kernel_data_segment = boot::KERNEL_DATA_SEGMENT;
 
     gdt_reg.limit = sizeof(this->_gdt) - 1;
     gdt_reg.base = (uint32_t)this->_gdt;
 
     asm volatile("lgdtl   %0\n\t"
-                 /** 
-                 * Kernel data segment is set at an offset of 16 bytes, which is 
-                 * 0x10 in hex, from the base address of the array of global
-                 * descripters. This is set in the initialize() method.
-                 */
-                 "movl    $0x10, %%eax\n\t"
+                 "movl    %1, %%eax\n\t"
                  "movl    %%eax, %%ds\n\t"
                  "movl    %%eax, %%es\n\t"
                  "movl    %%eax, %%fs\n\t"
                  "movl    %%eax, %%gs\n\t"
                  "movl    %%eax, %%ss\n\t"
-                 /** 
-                 * Kernel code segment is set at an offset of 8 bytes, which is 
-                 * 0x10 in hex, from the base address of the array of global
-                 * descripters. This is set in the initialize() method.
-                 */
-                 "ljmpl    $0x08, $1f\n\t"
-                 "1:\n\t" 
-                 ::"m"(gdt_reg));
+                 "ljmpl    %2, $1f\n\t"
+                 "1:\n\t" ::"m"(gdt_reg),
+                 "i"(kernel_data_segment), "i"(kernel_code_segment));
 }
 
 void boot::GDT::initialize()

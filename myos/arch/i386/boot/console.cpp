@@ -5,16 +5,47 @@
 #include <cstdio>
 
 #include <boot/vga.hpp>
+#include <boot/io.hpp>
 #include <boot/console.hpp>
 
 boot::Console boot::console;
 
+/**
+ * Update postion of cursor to the given coordinates.
+ * 
+ * @param column column number of the cursor
+ * @param row row number of the cursor
+ */
+static void update_cursor(uint16_t column, uint16_t row)
+{
+    // get location
+    uint16_t cursorLocation = row * VGA_WIDTH + column;
+
+    boot::outb(14, 0x3D4);
+    boot::outb(cursorLocation >> 8, 0x3D5); // Send the high byte.
+    boot::outb(15, 0x3D4);
+    boot::outb(cursorLocation, 0x3D5); // Send the low byte.
+}
+
 void boot::Console::initialize(enum VGAColor fg_color, enum VGAColor bg_color)
 {
-    this->row = 0;
-    this->column = 0;
-    this->color = fg_color | bg_color << 4;
+    this->color = uint8_t(fg_color) | uint8_t(bg_color) << 4;
     this->buffer = (uint16_t *)VGA_CGA_MEMORY;
+    this->clrscr();
+}
+
+void boot::Console::set_fg_color(enum VGAColor color)
+{
+    this->color = uint8_t(color) | (this->color & 0xf0);
+}
+
+void boot::Console::set_bg_color(enum VGAColor color)
+{
+    this->color = (this->color & 0x0f) | color << 4;
+}
+
+void boot::Console::clrscr()
+{
     for (size_t y = 0; y < VGA_HEIGHT; y++)
     {
         for (size_t x = 0; x < VGA_WIDTH; x++)
@@ -23,16 +54,9 @@ void boot::Console::initialize(enum VGAColor fg_color, enum VGAColor bg_color)
             this->buffer[index] = ' ' | (uint16_t)this->color << 8;
         }
     }
-}
-
-void boot::Console::set_fg_color(enum VGAColor color)
-{
-    this->color = color | this->color << 4;
-}
-
-void boot::Console::set_bg_color(enum VGAColor color)
-{
-    this->color = this->color | color << 4;
+    this->row = 0;
+    this->column = 0;
+    update_cursor(this->column, this->row);
 }
 
 int boot::Console::putchar(int c)
@@ -53,6 +77,7 @@ int boot::Console::putchar(int c)
             this->row++;
         }
     }
+    update_cursor(this->column, this->row);
 
     return 1;
 }

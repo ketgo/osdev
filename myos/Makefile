@@ -54,8 +54,8 @@ include $(KERNEL_DIR)/make.config
 
 # Kernel compile objects
 KERNEL_OBJS:=\
-$(KERNEL_ARCH_OBJS) \
 ${KERNEL_OBJS} \
+$(KERNEL_ARCH_OBJS) \
 
 # All compile ojects
 OBJS=\

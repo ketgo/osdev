@@ -99,9 +99,29 @@ namespace boot
 {
 
 /**
- * Maximum number of descriptors in GDT.
+ * Maximum number of descriptors in GDT. The first descriptor is always
+ * Null descriptor in compliance with x86 processors.
  */
 #define GDT_MAX_DESCRIPTORS 3
+
+/**
+ * Enumerated list of different segment selectors.
+ */
+enum Selectors
+{
+    /** 
+    * Kernel code segment is set at an offset of 8 bytes, which is 
+    * 0x08 in hex, from the base address of GDT. This is set in 
+    * the initialize() method of the GDT class.
+    */
+    KERNEL_CODE_SEGMENT = 0X08,
+    /** 
+    * Kernel data segment is set at an offset of 16 bytes, which is 
+    * 0x10 in hex, from the base address of GDT. This is set in the 
+    * initialize() method. of the GDT class.
+    */
+    KERNEL_DATA_SEGMENT = 0X10
+};
 
 /**
  * Enumerated list of GDT descriptor access bits
@@ -148,7 +168,7 @@ namespace boot
 #define GDT_DESC_ACCESS_CD_SEG 0x10
 
 /**
- * Sets Privilege Bits. [Default unset]
+ * Sets Privilege Bits. [Default unset for ring 0]
  * 
  * Contains the ring level, 0 = highest, 3 = lowest.
  */
@@ -162,7 +182,6 @@ namespace boot
  * This must be 1 for all valid selectors.
  */
 #define GDT_DESC_ACCESS_P 0x80
-
 
 /**
  * Enumerated list of GDT descriptor flag bits.
