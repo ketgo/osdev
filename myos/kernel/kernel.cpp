@@ -1,5 +1,4 @@
 #include <kernel/printk.hpp>
-#include <kernel/irq.hpp>
 
 /*
 	Extern "C" needed to disable name mangling by C++ compiler

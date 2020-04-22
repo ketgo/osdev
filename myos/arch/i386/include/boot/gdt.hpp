@@ -281,11 +281,22 @@ public:
 };
 
 /**
+ * This struct describes a GDT pointer. It points to the start of our array of
+ * GDT entries, and is in the format required by the lgdt instruction.
+ */
+struct __attribute__((packed)) GDTRegister
+{
+    uint16_t limit; /**< Size of gdt table minus one. */
+    uint32_t base;  /**< The base table address. */
+};
+
+/**
  * The GDT class containing an array of descriptors.
  */
 class GDT
 {
 private:
+    GDTRegister gdt_reg;                     /**< GDT register to load descriptors */
     GDTDescriptor _gdt[GDT_MAX_DESCRIPTORS]; /**< Array of global descriptors. */
 
 public:

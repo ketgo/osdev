@@ -4,6 +4,11 @@
 #include <boot/io.hpp>
 #include <boot/gdt.hpp>
 #include <boot/idt.hpp>
+#include <boot/isr.hpp>
+
+/***********************
+ * IDT Descriptor Class
+ ***********************/
 
 void boot::IDTDescriptor::set_handler(uint32_t isr_handler)
 {
@@ -52,15 +57,9 @@ boot::IDTDescriptor &boot::IDTDescriptor::operator=(boot::IDTDescriptor &other)
     return *this;
 }
 
-/**
- * A struct describing a pointer to an array of interrupt handlers.
- * This is in a format suitable for giving to 'lidt'.
- */
-struct __attribute__((packed)) IDTRegister
-{
-    uint16_t limit; /**< Size of idt table minus one. */
-    uint32_t base;  /**< The first entry address. */
-};
+/********************
+ * IDT Class
+ *******************/
 
 boot::IDT boot::idt;
 
@@ -86,15 +85,13 @@ boot::IDTDescriptor *boot::IDT::get_descriptor(uint32_t n)
 
 void boot::IDT::flush()
 {
-    static IDTRegister idt_reg;
+    this->idt_reg.limit = sizeof(this->_idt) - 1;
+    this->idt_reg.base = (uint32_t)this->_idt;
 
-    idt_reg.limit = sizeof(this->_idt) - 1;
-    idt_reg.base = (uint32_t)this->_idt;
-
-    asm volatile("lidtl   %0\n\t" ::"m"(idt_reg));
+    asm volatile("lidtl   %0\n\t" ::"m"(this->idt_reg));
 }
 
-static void isr_default_handler()
+static void isr_default_handler(boot::ISRFrame *const state)
 {
 
     // Clear interrupts to prevent double fault
@@ -110,11 +107,24 @@ static void isr_default_handler()
         ;
 }
 
+/**
+ * Interrupt Service Request (ISR) entry and exit stub template
+ * 
+ * @param n interrupt number associated with ISR
+ * @param error_code boolean indcating error code is passed to ISR
+ * @param isr pointer to ISR
+ */
+template <uint32_t n, bool error_code = false, boot::isr_handler_t isr = isr_default_handler>
+static void isr_stub(void)
+{
+    isr(NULL);
+}
+
 void boot::IDT::initialize()
 {
     for (int i = 0; i < IDT_MAX_DESCRIPTORS; i++)
     {
-        this->_idt[i].set_handler((uint32_t)isr_default_handler);
+        this->_idt[i].set_handler((uint32_t)isr_stub<0>);
         this->_idt[i].set_selector(boot::KERNEL_CODE_SEGMENT);
         this->_idt[i].set_flags(IDT_DESC_FLAG_PRESENT | IDT_DESC_FLAG_INT_BIT32);
     }

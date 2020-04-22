@@ -76,6 +76,9 @@
 
 #include <stdint.h>
 
+#include <boot/isr.hpp>
+
+
 namespace boot
 {
 
@@ -124,11 +127,11 @@ namespace boot
 class __attribute__((packed)) IDTDescriptor
 {
 private:
-    uint16_t offset_lo; /**< The lower 16 bits of the IRQ handler address to jump to. */
-    uint16_t selector;  /**< Code segment selector in GDT. */
-    const uint8_t zero = 0;       /**< This must always be zero. */
-    uint8_t flags;      /**< More flags. See documentation. */
-    uint16_t offset_hi; /**< The upper 16 bits of the IRQ handler address to jump to. */
+    uint16_t offset_lo;     /**< The lower 16 bits of the IRQ handler address to jump to. */
+    uint16_t selector;      /**< Code segment selector in GDT. */
+    const uint8_t zero = 0; /**< This must always be zero. */
+    uint8_t flags;          /**< More flags. See documentation. */
+    uint16_t offset_hi;     /**< The upper 16 bits of the IRQ handler address to jump to. */
 public:
     /**
      * Default constructor.
@@ -175,11 +178,22 @@ public:
 };
 
 /**
+ * A struct describing a pointer to an array of interrupt handlers.
+ * This is in a format suitable for giving to 'lidt'.
+ */
+struct __attribute__((packed)) IDTRegister
+{
+    uint16_t limit; /**< Size of idt table minus one. */
+    uint32_t base;  /**< The first entry address. */
+};
+
+/**
  * The IDT class containing an array of descriptors.
  */
 class IDT
 {
 private:
+    IDTRegister idt_reg;                     /**< IDT register used by x86 arch processors to load Interrupt vectors */
     IDTDescriptor _idt[IDT_MAX_DESCRIPTORS]; /**< Array of descriptors. */
 
 public:

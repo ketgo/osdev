@@ -2,6 +2,8 @@
 
 #include <boot/gdt.hpp>
 
+boot::GDT boot::gdt;
+
 void boot::GDTDescriptor::set_base(uint32_t base)
 {
     this->base_lo = 0;
@@ -73,18 +75,6 @@ boot::GDTDescriptor &boot::GDTDescriptor::operator=(boot::GDTDescriptor &other)
     return *this;
 }
 
-/**
- * This struct describes a GDT pointer. It points to the start of our array of
- * GDT entries, and is in the format required by the lgdt instruction.
- */
-struct __attribute__((packed)) GDTRegister
-{
-    uint16_t limit; /**< Size of gdt table minus one. */
-    uint32_t base;  /**< The base table address. */
-};
-
-boot::GDT boot::gdt;
-
 void boot::GDT::set_descriptor(uint32_t idx, boot::GDTDescriptor *gdt_desc)
 {
     if (idx >= GDT_MAX_DESCRIPTORS) // checks index
@@ -105,19 +95,11 @@ boot::GDTDescriptor *boot::GDT::get_descriptor(uint32_t idx)
 
 void boot::GDT::flush()
 {
-    /* Xen HVM incorrectly stores a pointer to the gdt_ptr, instead
-	   of the gdt_ptr contents.  Thus, make it static so it will
-	   stay in memory, at least long enough that we switch to the
-	   proper kernel GDT. 
-       
-       see: https://github.com/torvalds/linux/blob/0adb32858b0bddf4ada5f364a84ed60b196dbcda/arch/x86/boot/pm.c#L84 
-    */
-    static GDTRegister gdt_reg;
     uint32_t kernel_code_segment = boot::KERNEL_CODE_SEGMENT;
     uint32_t kernel_data_segment = boot::KERNEL_DATA_SEGMENT;
 
-    gdt_reg.limit = sizeof(this->_gdt) - 1;
-    gdt_reg.base = (uint32_t)this->_gdt;
+    this->gdt_reg.limit = sizeof(this->_gdt) - 1;
+    this->gdt_reg.base = (uint32_t)this->_gdt;
 
     asm volatile("lgdtl   %0\n\t"
                  "movl    %1, %%eax\n\t"
@@ -127,7 +109,7 @@ void boot::GDT::flush()
                  "movl    %%eax, %%gs\n\t"
                  "movl    %%eax, %%ss\n\t"
                  "ljmpl    %2, $1f\n\t"
-                 "1:\n\t" ::"m"(gdt_reg),
+                 "1:\n\t" ::"m"(this->gdt_reg),
                  "i"(kernel_data_segment), "i"(kernel_code_segment));
 }
 
