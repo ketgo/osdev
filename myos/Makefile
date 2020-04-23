@@ -9,7 +9,7 @@ TARGET?=
 
 # Default C and C++ compiler and linker flags
 CFLAGS?=-O2 -g
-CPPFLAGS?=
+CPPFLAGS?=-O2 -g
 LDFLAGS?=
 LIBS?=
 

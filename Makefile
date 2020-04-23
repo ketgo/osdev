@@ -39,7 +39,7 @@ export LIBDIR:=${EXEC_PREFIX}/lib
 export INCLUDEDIR:=${PREFIX}/include
 
 export CFLAGS:=-O2 -g
-export CPPFLAGS:=
+export CPPFLAGS:=-O2 -g
 
 # Configure the cross-compiler to use the desired system root.
 export SYSROOT:=${BUILD_DIR}/sysroot

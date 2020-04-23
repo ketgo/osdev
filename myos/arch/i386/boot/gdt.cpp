@@ -95,9 +95,6 @@ boot::GDTDescriptor *boot::GDT::get_descriptor(uint32_t idx)
 
 void boot::GDT::flush()
 {
-    uint32_t kernel_code_segment = boot::KERNEL_CODE_SEGMENT;
-    uint32_t kernel_data_segment = boot::KERNEL_DATA_SEGMENT;
-
     this->gdt_reg.limit = sizeof(this->_gdt) - 1;
     this->gdt_reg.base = (uint32_t)this->_gdt;
 
@@ -109,8 +106,11 @@ void boot::GDT::flush()
                  "movl    %%eax, %%gs\n\t"
                  "movl    %%eax, %%ss\n\t"
                  "ljmpl    %2, $1f\n\t"
-                 "1:\n\t" ::"m"(this->gdt_reg),
-                 "i"(kernel_data_segment), "i"(kernel_code_segment));
+                 "1:\n\t"
+                 :
+                 : "m"(this->gdt_reg),
+                   "i"((uint32_t)boot::KERNEL_DATA_SEGMENT),
+                   "i"((uint32_t)boot::KERNEL_CODE_SEGMENT));
 }
 
 void boot::GDT::initialize()
