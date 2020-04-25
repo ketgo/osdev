@@ -42,11 +42,11 @@ extern "C" void main(boot::MultibootInfo *multiboot_info)
 
     /* Setup GDT */
     boot::console.printf("Setting up GDT...\n");
-    boot::gdt.initialize();
+    boot::gdt.setup();
 
     /* Setup GDT */
     boot::console.printf("Setting up IDT...\n");
-    boot::idt.initialize();
+    boot::idt.setup();
 
     /* Set system in protected mode in case not already */
     boot::console.printf("Starting protected mode...\n");

@@ -76,8 +76,7 @@
 
 #include <stdint.h>
 
-#include <boot/isr.hpp>
-
+#include <kernel/ivt.hpp>
 
 namespace boot
 {
@@ -122,16 +121,16 @@ namespace boot
  * 
  * NOTE: Please do not add any virtual methods in the class definition. Doing so will 
  * change the memory layout causing undefined behaviour and most likely triple fault. 
- * Only plain membor methods should be added. 
+ * Only plain member methods should be added. 
  */
 class __attribute__((packed)) IDTDescriptor
 {
 private:
-    uint16_t offset_lo;     /**< The lower 16 bits of the IRQ handler address to jump to. */
+    uint16_t offset_lo;     /**< The lower 16 bits of the ISR address to jump to. */
     uint16_t selector;      /**< Code segment selector in GDT. */
     const uint8_t zero = 0; /**< This must always be zero. */
     uint8_t flags;          /**< More flags. See documentation. */
-    uint16_t offset_hi;     /**< The upper 16 bits of the IRQ handler address to jump to. */
+    uint16_t offset_hi;     /**< The upper 16 bits of the ISR address to jump to. */
 public:
     /**
      * Default constructor.
@@ -141,19 +140,19 @@ public:
     /**
      * Initialization constructor.
      * 
-     * @param isr_handler pointer to ISR
+     * @param isr pointer to ISR
      * @param selector code selector
      * @param flags descriptor flags to set
      */
-    IDTDescriptor(uint32_t isr_handler, uint16_t selector, uint8_t flags);
+    IDTDescriptor(uint32_t isr, uint16_t selector, uint8_t flags);
 
     /**
      * Set interrupt service routine (ISR).
      * 
-     * @param handler pointer to ISR
+     * @param isr pointer to ISR
      */
-    void set_handler(uint32_t isr_handler);
-    uint32_t get_handler();
+    void set_isr(uint32_t isr);
+    uint32_t get_isr();
 
     /**
      * Set code segment selector configured in GDT.
@@ -190,7 +189,7 @@ struct __attribute__((packed)) IDTRegister
 /**
  * The IDT class containing an array of descriptors.
  */
-class IDT
+class IDT: public kernel::IVT
 {
 private:
     IDTRegister idt_reg;                     /**< IDT register used by x86 arch processors to load Interrupt vectors */
@@ -198,9 +197,9 @@ private:
 
 public:
     /**
-    * Initialize the IDT with default descriptors. 
+    * Setup IDT with default descriptors. 
     */
-    void initialize();
+    void setup();
 
     /**
      * Install the set descriptors in IDT using the `lidt` instruction.
@@ -223,7 +222,7 @@ public:
      *  index postion of the descriptor in IDT.
      * @returns pointer to IDT descriptor.
      */
-    IDTDescriptor *get_descriptor(uint32_t n);
+    const IDTDescriptor *get_descriptor(uint32_t n);
 };
 
 /**

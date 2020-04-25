@@ -25,7 +25,7 @@ BOOTLOADER=grub
 
 # Emulator to use
 EMU=qemu
-EMU=bochs
+# EMU=bochs
 
 export AR:=${HOST}-ar
 export AS:=${HOST}-as

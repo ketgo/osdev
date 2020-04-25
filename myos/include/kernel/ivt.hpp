@@ -11,13 +11,15 @@
 
 #include <stdint.h>
 
-/**
- * Function pointer type to ISR handling inturrept requests (IRQ).
- */
-typedef void (*irq_handler_t)(void);
+#include <boot/isr.hpp>
 
 namespace kernel
 {
+
+/**
+ * Maximum number of interrupt handlers supported by the kernel
+ */
+#define IVT_MAX_VECTORS 256
 
 /**
  * Interface for Interrupt Vector Table (IVT) to be implemented by arch specific
@@ -26,21 +28,34 @@ namespace kernel
  */
 class IVT
 {
+private:
+    /**
+     * Array of interrupt vectors, a.k.a interrupt handlers.
+     */
+    static boot::isr_handler_t vector[IVT_MAX_VECTORS];
+
+protected:
+    /**
+     * Common interrupt handler entry point. This method has the same
+     * signature as an interrupt handler.
+     * 
+     * @param state pointer to interrupt stack frame containing CPU state
+     */
+    static void isr_entry(boot::ISRFrame *const state);
+
 public:
+    /** Default constructor */
+    IVT();
+
     /**
      * Register Interrupt Service Routine (ISR) in Interrupt Vector Table (IVT).
      * 
      * @param n interrupt number to be assigned to ISR
      * @param isr function pointer to ISR
      */
-    virtual void register_isr(const uint32_t n, irq_handler_t isr) = 0;
+    static void register_isr(const uint32_t n, boot::isr_handler_t isr);
 };
 
-/**
- * IVT object pointer used by kernel. The instance should to be declared by the
- * arch specific codebase.
- */
-extern IVT *ivt;
 } // namespace kernel
 
 #endif /* IRQ_HPP */

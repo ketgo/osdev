@@ -301,9 +301,9 @@ private:
 
 public:
     /**
-    * Initialize the GDT with default descriptors.
+    * Setup GDT with default descriptors.
     */
-    void initialize();
+    void setup();
 
     /**
      * Install the set descriptors in GDT using the `lgdt` instruction.

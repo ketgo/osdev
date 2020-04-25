@@ -55,11 +55,6 @@ _start:
 	; in assembly as languages such as C cannot function without a stack.
 	mov esp, stack_top
 
-	; Push the multiboot information for the kernel entrypoint. As per the 
-	; multiboot specification the address to this information is stored in 
-	; the ebx register.
-	push dword ebx
- 
 	; This is a good place to initialize crucial processor state before the
 	; high-level kernel is entered. It's best to minimize the early
 	; environment where crucial features are offline. Note that the
@@ -68,6 +63,13 @@ _start:
 	; yet. The GDT should be loaded here. Paging should be enabled here.
 	; C++ features such as global constructors and exceptions will require
 	; runtime support to work as well.
+	extern _init	; Global constructors
+	call _init
+
+	; Push the multiboot information for the kernel entrypoint. As per the 
+	; multiboot specification the address to this information is stored in 
+	; the ebx register.
+	push dword ebx
  
 	; Enter the high-level kernel. The ABI requires the stack is 16-byte
 	; aligned at the time of the call instruction (which afterwards pushes
@@ -83,6 +85,12 @@ _start:
 	; since the system will be put into an infinte loop from this point, its
 	; good practice to do so.
 	add esp, 4
+
+	; Calling global destroctors. Even though it does not matter here
+	; since the system will be put into an infinte loop from this point, its
+	; good practice to do so.
+	extern _fini
+	call _fini
  
 	; If the system has nothing more to do, put the computer into an
 	; infinite loop. To do that:

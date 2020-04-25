@@ -86,12 +86,8 @@ There are couple of ways to debug the kernel. One is using the cross-compiled `g
   
   ## References
 
-- [PhoeniX OS](https://git.phoenix.dj/phoenix/phoenix-os/tree/master)
-- [Antares Kernel](https://github.com/Such13373rHax0r/ANTARES-KERNEL)
-- [Dennix](https://github.com/dennis95/dennix)
-- [Aura](https://github.com/neonorb/aura)
-- [kOS](https://github.com/kissthink/kos)
 - [Baremetal x86_64](https://github.com/winksaville/baremetal-x86_64)
 - [Klosy Legacy](https://github.com/kodo-pp/klosy-legacy)
 - [BeeOS](https://github.com/davxy/beeos)
+- [Beelzebub](https://github.com/vercas/Beelzebub)
 - [Linux](https://github.com/torvalds/linux)

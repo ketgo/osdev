@@ -10,18 +10,25 @@
  * IDT Descriptor Class
  ***********************/
 
-void boot::IDTDescriptor::set_handler(uint32_t isr_handler)
+boot::IDTDescriptor::IDTDescriptor(uint32_t isr, uint16_t selector, uint8_t flags)
 {
-    this->offset_lo = uint16_t(isr_handler & 0xffff);
-    this->offset_hi = uint16_t((isr_handler >> 16) & 0xffff);
+    set_isr(isr);
+    set_selector(selector);
+    set_flags(flags);
 }
 
-uint32_t boot::IDTDescriptor::get_handler()
+void boot::IDTDescriptor::set_isr(uint32_t isr_handler)
+{
+    offset_lo = uint16_t(isr_handler & 0xffff);
+    offset_hi = uint16_t((isr_handler >> 16) & 0xffff);
+}
+
+uint32_t boot::IDTDescriptor::get_isr()
 {
     uint32_t isr_handler;
 
-    isr_handler = uint32_t(this->offset_lo);
-    isr_handler += uint32_t(this->offset_hi) << 16;
+    isr_handler = uint32_t(offset_lo);
+    isr_handler += uint32_t(offset_hi) << 16;
 
     return isr_handler;
 }
@@ -33,7 +40,7 @@ void boot::IDTDescriptor::set_selector(uint16_t selector)
 
 uint16_t boot::IDTDescriptor::get_selector()
 {
-    return this->selector;
+    return selector;
 }
 
 void boot::IDTDescriptor::set_flags(uint8_t flags)
@@ -43,16 +50,16 @@ void boot::IDTDescriptor::set_flags(uint8_t flags)
 
 uint8_t boot::IDTDescriptor::get_flags()
 {
-    return this->flags;
+    return flags;
 }
 
 boot::IDTDescriptor &boot::IDTDescriptor::operator=(boot::IDTDescriptor &other)
 {
     if (this != &other) // self-assignment check
     {
-        this->set_handler(other.get_handler());
-        this->set_selector(other.get_selector());
-        this->set_flags(other.get_flags());
+        set_isr(other.get_isr());
+        set_selector(other.get_selector());
+        set_flags(other.get_flags());
     }
     return *this;
 }
@@ -63,47 +70,32 @@ boot::IDTDescriptor &boot::IDTDescriptor::operator=(boot::IDTDescriptor &other)
 
 boot::IDT boot::idt;
 
-void boot::IDT::set_descriptor(uint32_t n, boot::IDTDescriptor *idt_desc)
+void boot::IDT::set_descriptor(uint32_t n, IDTDescriptor *idt_desc)
 {
     if (n > IDT_MAX_DESCRIPTORS) // checks index
     {
         return;
     }
 
-    this->_idt[n] = *idt_desc;
+    _idt[n] = *idt_desc;
 }
 
-boot::IDTDescriptor *boot::IDT::get_descriptor(uint32_t n)
+const boot::IDTDescriptor *boot::IDT::get_descriptor(uint32_t n)
 {
     if (n > IDT_MAX_DESCRIPTORS) // checks index
     {
         return 0;
     }
 
-    return &this->_idt[n];
+    return &_idt[n];
 }
 
 void boot::IDT::flush()
 {
-    this->idt_reg.limit = sizeof(this->_idt) - 1;
-    this->idt_reg.base = (uint32_t)this->_idt;
+    idt_reg.limit = sizeof(_idt) - 1;
+    idt_reg.base = (uint32_t)_idt;
 
-    asm volatile("lidtl   %0\n\t" ::"m"(this->idt_reg));
-}
-
-extern "C" void isr_default_handler(boot::ISRFrame *const state)
-{
-    boot::console.set_bg_color(VGA_COLOR_BLUE);
-    boot::console.set_fg_color(VGA_COLOR_WHITE);
-    boot::console.clrscr();
-    boot::console.printf("*** [ERROR] isr_default_handler: Unhandled Exception\n");
-    boot::console.printf("\n----------- Stack ----------\n\n");
-    boot::console.printf("IR: %d\n", state->int_num);
-    boot::console.printf("\n----------------------------\n");
-
-    // Stop system
-    for (;;)
-        ;
+    asm volatile("lidtl   %0\n\t" ::"m"(idt_reg));
 }
 
 /**
@@ -119,7 +111,7 @@ extern "C" void isr_default_handler(boot::ISRFrame *const state)
  *  a bogus error code is pushed passed to ISR handler stack frame.
  * @param isr_handler pointer to ISR handler
  */
-template <uint32_t num, bool is_exception = false, boot::isr_handler_t isr_handler = isr_default_handler>
+template <uint32_t num, bool is_exception, boot::isr_handler_t isr_entry>
 static void isr_stub(void)
 {
     asm volatile("cli\n\t"
@@ -127,9 +119,9 @@ static void isr_stub(void)
                  ".if %c0\n\t"
                  // Do nothing as the error code is pushed by processor.
                  ".else\n\t"
-                 // Push bogus error code
+                 // Else push bogus error code
                  "push $0\n\t"
-                 // End if marco
+                 // End of if marco
                  ".endif\n\t"
                  // Push interrupt number to stack frame
                  "push %1\n\t"
@@ -172,18 +164,29 @@ static void isr_stub(void)
                  : "i"(is_exception),
                    "i"(num),
                    "i"(boot::KERNEL_DATA_SEGMENT),
-                   "i"(isr_handler));
+                   "i"(isr_entry));
 }
 
-void boot::IDT::initialize()
+/**
+ * Template to setup multiple ISR handlers.
+ * 
+ */
+
+void boot::IDT::setup()
 {
+#define REGISTER_ISR(num, is_exception)                   \
+    boot::IDTDescriptor idt_desc(                         \
+        (uint32_t)isr_stub<5, is_exception, isr_entry>, \
+        boot::KERNEL_CODE_SEGMENT,                        \
+        IDT_DESC_FLAG_PRESENT | IDT_DESC_FLAG_INT_BIT32); \
+    set_descriptor(i, &idt_desc);
+
     for (int i = 0; i < IDT_MAX_DESCRIPTORS; i++)
     {
-        const int num = 5;
-        this->_idt[i].set_handler((uint32_t)isr_stub<num>);
-        this->_idt[i].set_selector(boot::KERNEL_CODE_SEGMENT);
-        this->_idt[i].set_flags(IDT_DESC_FLAG_PRESENT | IDT_DESC_FLAG_INT_BIT32);
+        REGISTER_ISR(i, false);
     }
 
-    this->flush();
+#undef REGISTER_ISR
+
+    flush();
 }

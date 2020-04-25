@@ -29,19 +29,19 @@ static void update_cursor(uint16_t column, uint16_t row)
 
 void boot::Console::initialize(enum VGAColor fg_color, enum VGAColor bg_color)
 {
-    this->color = uint8_t(fg_color) | uint8_t(bg_color) << 4;
-    this->buffer = (uint16_t *)VGA_CGA_MEMORY;
-    this->clrscr();
+    color = uint8_t(fg_color) | uint8_t(bg_color) << 4;
+    buffer = (uint16_t *)VGA_CGA_MEMORY;
+    clrscr();
 }
 
-void boot::Console::set_fg_color(enum VGAColor color)
+void boot::Console::set_fg_color(enum VGAColor fg_color)
 {
-    this->color = uint8_t(color) | (this->color & 0xf0);
+    color = uint8_t(fg_color) | (color & 0xf0);
 }
 
-void boot::Console::set_bg_color(enum VGAColor color)
+void boot::Console::set_bg_color(enum VGAColor bg_color)
 {
-    this->color = (this->color & 0x0f) | color << 4;
+    color = (color & 0x0f) | uint8_t(bg_color) << 4;
 }
 
 void boot::Console::clrscr()
@@ -51,33 +51,33 @@ void boot::Console::clrscr()
         for (size_t x = 0; x < VGA_WIDTH; x++)
         {
             const size_t index = y * VGA_WIDTH + x;
-            this->buffer[index] = ' ' | (uint16_t)this->color << 8;
+            buffer[index] = ' ' | (uint16_t)color << 8;
         }
     }
-    this->row = 0;
-    this->column = 0;
-    update_cursor(this->column, this->row);
+    row = 0;
+    column = 0;
+    update_cursor(column, row);
 }
 
 int boot::Console::putchar(int c)
 {
     unsigned char uc = (unsigned char)c;
-    const size_t index = this->row * VGA_WIDTH + this->column;
+    const size_t index = row * VGA_WIDTH + column;
 
-    this->buffer[index] = uc | (uint16_t)this->color << 8;
-    if (++this->column == VGA_WIDTH)
+    buffer[index] = uc | (uint16_t)color << 8;
+    if (++column == VGA_WIDTH)
     {
-        this->column = 0;
-        if (++this->row == VGA_HEIGHT)
+        column = 0;
+        if (++row == VGA_HEIGHT)
         {
-            this->row = 0;
+            row = 0;
         }
         else
         {
-            this->row++;
+            row++;
         }
     }
-    update_cursor(this->column, this->row);
+    update_cursor(column, row);
 
     return 1;
 }
@@ -91,11 +91,11 @@ int boot::Console::puts(const char *s)
     {
         if (s[i] == '\n')
         {
-            this->column = 0;
-            this->row++;
+            column = 0;
+            row++;
             continue;
         }
-        this->putchar(s[i]);
+        putchar(s[i]);
         written++;
     }
 
@@ -111,5 +111,5 @@ int boot::Console::printf(const char *s, ...)
     std::vsnprintf(buff, VGA_WIDTH, s, args);
     va_end(args);
 
-    return this->puts(buff);
+    return puts(buff);
 }
