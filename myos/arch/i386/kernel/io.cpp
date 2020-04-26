@@ -1,7 +1,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <boot/io.hpp>
+#include <arch/io.hpp>
 
 void boot::cli()
 {

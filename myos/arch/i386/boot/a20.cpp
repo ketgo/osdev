@@ -15,9 +15,10 @@
 #include <stdint.h>
 
 #include <boot/console.hpp>
-#include <boot/io.hpp>
 #include <boot/asm.hpp>
 #include <boot/a20.hpp>
+
+#include <arch/io.hpp>
 
 #define MAX_8042_LOOPS 100000
 #define MAX_8042_FF 32

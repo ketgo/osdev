@@ -1,10 +1,11 @@
 #include <stdint.h>
 
 #include <boot/console.hpp>
-#include <boot/io.hpp>
 #include <boot/gdt.hpp>
 #include <boot/idt.hpp>
-#include <boot/isr.hpp>
+
+#include <arch/io.hpp>
+#include <arch/isr.hpp>
 
 /***********************
  * IDT Descriptor Class
@@ -17,10 +18,10 @@ boot::IDTDescriptor::IDTDescriptor(uint32_t isr, uint16_t selector, uint8_t flag
     set_flags(flags);
 }
 
-void boot::IDTDescriptor::set_isr(uint32_t isr_handler)
+void boot::IDTDescriptor::set_isr(uint32_t isr)
 {
-    offset_lo = uint16_t(isr_handler & 0xffff);
-    offset_hi = uint16_t((isr_handler >> 16) & 0xffff);
+    offset_lo = uint16_t(isr & 0xffff);
+    offset_hi = uint16_t((isr >> 16) & 0xffff);
 }
 
 uint32_t boot::IDTDescriptor::get_isr()
@@ -70,26 +71,6 @@ boot::IDTDescriptor &boot::IDTDescriptor::operator=(boot::IDTDescriptor &other)
 
 boot::IDT boot::idt;
 
-void boot::IDT::set_descriptor(uint32_t n, IDTDescriptor *idt_desc)
-{
-    if (n > IDT_MAX_DESCRIPTORS) // checks index
-    {
-        return;
-    }
-
-    _idt[n] = *idt_desc;
-}
-
-const boot::IDTDescriptor *boot::IDT::get_descriptor(uint32_t n)
-{
-    if (n > IDT_MAX_DESCRIPTORS) // checks index
-    {
-        return 0;
-    }
-
-    return &_idt[n];
-}
-
 void boot::IDT::flush()
 {
     idt_reg.limit = sizeof(_idt) - 1;
@@ -98,21 +79,8 @@ void boot::IDT::flush()
     asm volatile("lidtl   %0\n\t" ::"m"(idt_reg));
 }
 
-/**
- * Interrupt Service Request (ISR) entry and exit stub template. 
- * 
- * The template sets up the stack frame for an ISR. This is needed since 
- * the standard C++ stack frame setup for functions is inconsistent with 
- * that required for interrupts. The underlying assembly instructions for
- * a standard function call uses ret to return while an interrupt uses iret.
- * 
- * @param num interrupt number associated with ISR
- * @param is_exception boolean indcating interrupt handles exception. If not 
- *  a bogus error code is pushed passed to ISR handler stack frame.
- * @param isr_handler pointer to ISR handler
- */
-template <uint32_t num, bool is_exception, boot::isr_handler_t isr_entry>
-static void isr_stub(void)
+template <uint32_t num, bool error_code>
+void boot::IDT::isr_stub(void)
 {
     asm volatile("cli\n\t"
                  // Check if the sub is for exception interrupt
@@ -161,7 +129,7 @@ static void isr_stub(void)
                  // pops 5 things at once: cs,eip,eflags,ss,esp
                  "iret\n\t"
                  :
-                 : "i"(is_exception),
+                 : "i"(error_code),
                    "i"(num),
                    "i"(boot::KERNEL_DATA_SEGMENT),
                    "i"(isr_entry));
@@ -174,19 +142,77 @@ static void isr_stub(void)
 
 void boot::IDT::setup()
 {
-#define REGISTER_ISR(num, is_exception)                   \
-    boot::IDTDescriptor idt_desc(                         \
-        (uint32_t)isr_stub<5, is_exception, isr_entry>, \
-        boot::KERNEL_CODE_SEGMENT,                        \
-        IDT_DESC_FLAG_PRESENT | IDT_DESC_FLAG_INT_BIT32); \
-    set_descriptor(i, &idt_desc);
+#define SETUP_IRQ(num, error_code)                                      \
+    _idt[num].set_isr((uint32_t)&boot::IDT::isr_stub<num, error_code>); \
+    _idt[num].set_selector(boot::KERNEL_CODE_SEGMENT);                  \
+    _idt[num].set_flags(IDT_DESC_FLAG_PRESENT | IDT_DESC_FLAG_INT_BIT32);
 
-    for (int i = 0; i < IDT_MAX_DESCRIPTORS; i++)
-    {
-        REGISTER_ISR(i, false);
-    }
+    /*
+    * Setup interrupts for Exceptions and Faults
+    */
 
-#undef REGISTER_ISR
+    SETUP_IRQ(0, false);
+    SETUP_IRQ(1, false);
+    SETUP_IRQ(2, false);
+    SETUP_IRQ(3, false);
+    SETUP_IRQ(4, false);
+    SETUP_IRQ(5, false);
+    SETUP_IRQ(6, false);
+    SETUP_IRQ(7, false);
+    SETUP_IRQ(8, true);
+    SETUP_IRQ(9, false);
+    SETUP_IRQ(10, true);
+    SETUP_IRQ(11, true);
+    SETUP_IRQ(12, true);
+    SETUP_IRQ(13, true);
+    SETUP_IRQ(14, true);
+    SETUP_IRQ(15, false);
+    SETUP_IRQ(16, false);
+    SETUP_IRQ(17, false);
+    SETUP_IRQ(18, false);
+    SETUP_IRQ(19, false);
+    SETUP_IRQ(20, false);
+    SETUP_IRQ(21, true);
+    SETUP_IRQ(21, true);
+    SETUP_IRQ(22, true);
+    SETUP_IRQ(23, true);
+    SETUP_IRQ(24, true);
+    SETUP_IRQ(25, false);
+    SETUP_IRQ(26, false);
+    SETUP_IRQ(27, false);
+    SETUP_IRQ(28, false);
+    SETUP_IRQ(29, false);
+    SETUP_IRQ(30, false);
+    SETUP_IRQ(31, false);
+
+    /**
+     * Setup default handlers for rest of the interrupts
+     */
+
+    SETUP_IRQ(32, true);
+    SETUP_IRQ(33, true);
+    SETUP_IRQ(34, true);
+    SETUP_IRQ(35, false);
+    SETUP_IRQ(36, false);
+    SETUP_IRQ(37, false);
+    SETUP_IRQ(38, false);
+    SETUP_IRQ(39, false);
+    SETUP_IRQ(40, false);
+    SETUP_IRQ(41, false);
+    SETUP_IRQ(42, false);
+    SETUP_IRQ(43, false);
+    SETUP_IRQ(44, false);
+    SETUP_IRQ(45, false);
+    SETUP_IRQ(46, false);
+    SETUP_IRQ(47, false);
+
+    /** 
+     * Software interrupt (used by syscalls) 
+     */
+
+    SETUP_IRQ(128, false); // Commonly used IRQ number used for syscalls.
+
+#undef SETUP_IRQ
 
     flush();
 }

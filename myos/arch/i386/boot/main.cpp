@@ -1,10 +1,12 @@
 #include <boot/multiboot.hpp>
 #include <boot/console.hpp>
-#include <boot/io.hpp>
 #include <boot/a20.hpp>
 #include <boot/gdt.hpp>
 #include <boot/idt.hpp>
 #include <boot/pm.hpp>
+
+#include <arch/io.hpp>
+#include <arch/exception.hpp>
 
 /**
  * Kernel entry point.
@@ -44,16 +46,13 @@ extern "C" void main(boot::MultibootInfo *multiboot_info)
     boot::console.printf("Setting up GDT...\n");
     boot::gdt.setup();
 
-    /* Setup GDT */
+    /* Setup IDT */
     boot::console.printf("Setting up IDT...\n");
     boot::idt.setup();
 
     /* Set system in protected mode in case not already */
     boot::console.printf("Starting protected mode...\n");
     boot::start_protected_mode();
-
-    /** Enable interupts */
-    boot::sti();
 
     /* Starting kernel */
     boot::console.printf("Starting kernel...\n");

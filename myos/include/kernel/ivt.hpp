@@ -11,7 +11,7 @@
 
 #include <stdint.h>
 
-#include <boot/isr.hpp>
+#include <arch/isr.hpp>
 
 namespace kernel
 {

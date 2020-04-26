@@ -324,7 +324,7 @@ public:
      * @param idx index postion of the descriptor to get
      * @returns pointer to descriptor
      */
-    GDTDescriptor *get_descriptor(uint32_t idx);
+    const GDTDescriptor *get_descriptor(uint32_t idx);
 };
 
 /**

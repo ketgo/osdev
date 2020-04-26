@@ -189,11 +189,26 @@ struct __attribute__((packed)) IDTRegister
 /**
  * The IDT class containing an array of descriptors.
  */
-class IDT: public kernel::IVT
+class IDT : public kernel::IVT
 {
 private:
     IDTRegister idt_reg;                     /**< IDT register used by x86 arch processors to load Interrupt vectors */
     IDTDescriptor _idt[IDT_MAX_DESCRIPTORS]; /**< Array of descriptors. */
+
+    /**
+     * Interrupt Service Request (ISR) entry and exit stub template. 
+     * 
+     * The template sets up the stack frame for an ISR. This is needed since 
+     * the standard C++ stack frame setup for functions is inconsistent with 
+     * that required for interrupts. The underlying assembly instructions for
+     * a standard function call uses ret to return while an interrupt uses iret.
+     * 
+     * @param n interrupt number associated with ISR
+     * @param error_code boolean indcating interrupt is passed with error code. 
+     *  If not a bogus error code is pushed passed to ISR handler stack frame.
+     */
+    template <uint32_t n, bool error_code>
+    static void isr_stub(void);
 
 public:
     /**
@@ -205,24 +220,6 @@ public:
      * Install the set descriptors in IDT using the `lidt` instruction.
      */
     void flush();
-
-    /**
-     * Set descriptor in IDT.
-     * 
-     * @param n interrupt number to be used for IDT descriptor. This is the 
-     *  index position of the descriptor in IDT.
-     * @param idt_desc pointer to IDT descriptor.
-     */
-    void set_descriptor(uint32_t n, IDTDescriptor *idt_desc);
-
-    /**
-     * Get descriptor in IDT.
-     * 
-     * @param n interrupt number used for the IDT descriptor. This is the 
-     *  index postion of the descriptor in IDT.
-     * @returns pointer to IDT descriptor.
-     */
-    const IDTDescriptor *get_descriptor(uint32_t n);
 };
 
 /**

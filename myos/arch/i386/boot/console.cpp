@@ -5,8 +5,9 @@
 #include <cstdio>
 
 #include <boot/vga.hpp>
-#include <boot/io.hpp>
 #include <boot/console.hpp>
+
+#include <arch/io.hpp>
 
 boot::Console boot::console;
 

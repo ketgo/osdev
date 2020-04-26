@@ -1,6 +1,6 @@
 #include <stdint.h>
 
-#include <boot/isr.hpp>
+#include <arch/isr.hpp>
 #include <boot/console.hpp>
 
 #include <kernel/ivt.hpp>
@@ -27,7 +27,7 @@ static void isr_default_handler(boot::ISRFrame *const state)
 kernel::IVT::IVT()
 {
     for (uint32_t i = 0; i < IVT_MAX_VECTORS; ++i)
-        register_isr(i, isr_default_handler);
+        vector[i] = isr_default_handler;
 }
 
 void kernel::IVT::isr_entry(boot::ISRFrame *const state)

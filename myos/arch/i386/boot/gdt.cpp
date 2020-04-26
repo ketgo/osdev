@@ -79,7 +79,7 @@ void boot::GDT::set_descriptor(uint32_t idx, boot::GDTDescriptor *gdt_desc)
     _gdt[idx] = *gdt_desc;
 }
 
-boot::GDTDescriptor *boot::GDT::get_descriptor(uint32_t idx)
+const boot::GDTDescriptor *boot::GDT::get_descriptor(uint32_t idx)
 {
     if (idx >= GDT_MAX_DESCRIPTORS) // checks index
     {
