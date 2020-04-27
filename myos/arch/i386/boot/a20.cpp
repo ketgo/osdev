@@ -14,7 +14,6 @@
 
 #include <stdint.h>
 
-#include <boot/console.hpp>
 #include <boot/asm.hpp>
 #include <boot/a20.hpp>
 

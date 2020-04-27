@@ -90,4 +90,5 @@ There are couple of ways to debug the kernel. One is using the cross-compiled `g
 - [Klosy Legacy](https://github.com/kodo-pp/klosy-legacy)
 - [BeeOS](https://github.com/davxy/beeos)
 - [Beelzebub](https://github.com/vercas/Beelzebub)
+- [Qword](https://github.com/qword-os/qword)
 - [Linux](https://github.com/torvalds/linux)

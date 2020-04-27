@@ -26,6 +26,9 @@ KERNEL_DIR=kernel
 # Architecture specific source code directory
 ARCHDIR=arch/${TARGET}
 
+# Device drivers source code directoy
+DRIVERDIR=drivers
+
 # NASM assembler
 ASM=nasm
 # NASM assembler flags
@@ -49,12 +52,22 @@ CPPFLAGS:=$(CPPFLAGS) $(KERNEL_ARCH_CPPFLAGS)
 LDFLAGS:=$(LDFLAGS) $(KERNEL_ARCH_LDFLAGS)
 LIBS:=$(LIBS) $(KERNEL_ARCH_LIBS)
 
+# Include driver config
+include $(DRIVERDIR)/make.config
+
+# Update compiler and linker flags
+CFLAGS:=$(CFLAGS) $(DRIVER_CFLAGS)
+CPPFLAGS:=$(CPPFLAGS) $(DRIVER_CPPFLAGS)
+LDFLAGS:=$(LDFLAGS) $(DRIVER_LDFLAGS)
+LIBS:=$(LIBS) $(DRIVER_LIBS)
+
 # Include kernel specific config
 include $(KERNEL_DIR)/make.config
 
 # Kernel compile objects
 KERNEL_OBJS:=\
 ${KERNEL_OBJS} \
+${DRIVER_OBJS} \
 $(KERNEL_ARCH_OBJS) \
 
 # All compile ojects

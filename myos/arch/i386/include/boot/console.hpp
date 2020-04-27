@@ -3,7 +3,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include <boot/vga.hpp>
+#include <arch/vga.hpp>
 
 namespace boot
 {
