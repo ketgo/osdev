@@ -1,22 +1,20 @@
-#include <kernel/printk.hpp>
+#include <boot/multiboot.hpp>
 
 #include <arch/setup.hpp>
 
-/*
-	Extern "C" needed to disable name mangling by C++ compiler
-	for C code blocks. This prevents linking errors between C
-	and C++ code.
-*/
-extern "C" void start_kernel(void)
+#include <kernel/printf.hpp>
+
+/**
+ * Kernel start entry point.
+ * 
+ * @param multiboot_info multiboot information
+ */
+extern "C" void start_kernel(boot::MultibootInfo *multiboot_info)
 {
-	/**
-	 * Kernel start entry point.
-	 */
-
-	kernel::printk("Hello, kernel World!\n");
-
 	// Setup arch
 	arch::setup();
+
+	kernel::printf("Hello, kernel World!\n");
 
 	for (;;)
 		;

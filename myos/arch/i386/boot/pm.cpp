@@ -1,4 +1,4 @@
-#include <boot/pm.hpp>
+#include <i386/pm.hpp>
 
 /**
  * The method sets protected mode through the CR0 register.
@@ -22,7 +22,7 @@
  * 
  * The important bit here is bit 0.
  */
-void boot::start_protected_mode()
+void I386::start_protected_mode()
 {
     asm volatile(
         "movl %cr0, %eax\n\t"

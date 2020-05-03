@@ -1,9 +1,11 @@
 /**
- * Arch specific setup method invoked by the kernel.
+ * Architecture specific setup method invoked by the kernel.
  */
 
 #ifndef SETUP_HPP
 #define SETUP_HPP
+
+#include <kernel/defs.hpp>
 
 namespace arch
 {
@@ -11,8 +13,8 @@ namespace arch
 * Architecture specific setup routine invoked by the kernel. 
 * Each arch should implement this method.
 */
-extern void setup();
+void __arch setup();
 
-} // namespace kernel
+} // namespace arch
 
 #endif /* SETUP_HPP */

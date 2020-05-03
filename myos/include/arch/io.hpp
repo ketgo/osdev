@@ -1,34 +1,37 @@
-#ifndef ARCH_I386_IO_HPP
-#define ARCH_I386_IO_HPP
 /**
- * Basic IO routines for x86 processor
+ * Basic IO routines. The implementation of these routines are architecture dependent.
  */
+
+#ifndef IO_HPP
+#define IO_HPP
 
 #include <stddef.h>
 #include <stdint.h>
 
-namespace boot
+#include <kernel/defs.hpp>
+
+namespace arch
 {
 /**
  * Disable interupts.
  * 
  * This method disables all system interrupts.
  */
-void cli();
+void __arch cli();
 
 /**
  * Enable interupts.
  * 
  * This method enables all system interrupts.
  */
-void sti();
+void __arch sti();
 
 /**
  * Repeated NOP operation.
  * 
  * Utility method to perform a repeated nop operation.
  */
-void rep_nop();
+void __arch rep_nop();
 
 /**
  * Delay I/O
@@ -41,7 +44,7 @@ void rep_nop();
  * 
  * ref: https://stackoverflow.com/questions/6793899/what-does-the-0x80-port-address-connect-to
  */
-void io_delay(void);
+void __arch io_delay(void);
 
 /** 
  * Output byte value on port.
@@ -49,7 +52,7 @@ void io_delay(void);
  * @param  value byte value to output
  * @param port port number
  */
-void outb(uint8_t value, uint16_t port);
+void __arch outb(uint8_t value, uint16_t port);
 
 /**
  * Input byte value from port.
@@ -57,7 +60,7 @@ void outb(uint8_t value, uint16_t port);
  * @param port port number
  * @returns byte value at port
  */
-uint8_t inb(uint16_t port);
+uint8_t __arch inb(uint16_t port);
 
 /** 
  * Output 2-byte value on port.
@@ -65,7 +68,7 @@ uint8_t inb(uint16_t port);
  * @param  value 2-byte value to output
  * @param port port number
  */
-void outw(uint16_t value, uint16_t port);
+void __arch outw(uint16_t value, uint16_t port);
 
 /**
  * Input 2-byte value from port.
@@ -73,7 +76,7 @@ void outw(uint16_t value, uint16_t port);
  * @param port port number
  * @returns 2-byte value at port
  */
-uint16_t inw(uint16_t port);
+uint16_t __arch inw(uint16_t port);
 
 /** 
  * Output 4-byte value on port.
@@ -81,7 +84,7 @@ uint16_t inw(uint16_t port);
  * @param  value 4-byte value to output
  * @param port port number
  */
-void outl(uint32_t value, uint16_t port);
+void __arch outl(uint32_t value, uint16_t port);
 
 /**
  * Input 4-byte value from port.
@@ -89,8 +92,8 @@ void outl(uint32_t value, uint16_t port);
  * @param port port number
  * @returns 4-byte value at port
  */
-uint32_t inl(uint16_t port);
+uint32_t __arch inl(uint16_t port);
 
-} // namespace boot
+} // namespace arch
 
-#endif /* ARCH_I386_IO_HPP */
+#endif /* IO_HPP */

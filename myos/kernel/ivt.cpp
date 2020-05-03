@@ -1,23 +1,23 @@
 #include <stdint.h>
 
-#include <arch/isr.hpp>
-#include <boot/console.hpp>
+#include <i386/isr.hpp>
+#include <i386/console.hpp>
 
 #include <kernel/ivt.hpp>
 
-boot::isr_handler_t kernel::IVT::vector[IVT_MAX_VECTORS];
+I386::isr_handler_t kernel::IVT::vector[IVT_MAX_VECTORS];
 
-static void isr_default_handler(boot::ISRFrame *const state)
+static void isr_default_handler(I386::ISRFrame *const state)
 {
     /** TODO: Use printk instead of console **/
 
-    boot::console.set_bg_color(VGA_COLOR_BLUE);
-    boot::console.set_fg_color(VGA_COLOR_WHITE);
-    boot::console.clrscr();
-    boot::console.printf("*** [ERROR] isr_default_handler: Unhandled Exception\n");
-    boot::console.printf("\n----------- Stack ----------\n\n");
-    boot::console.printf("IR: %d\n", state->int_num);
-    boot::console.printf("\n----------------------------\n");
+    I386::console.set_bg_color(I386::VGA_COLOR_BLUE);
+    I386::console.set_fg_color(I386::VGA_COLOR_WHITE);
+    I386::console.clrscr();
+    I386::console.printf("*** [ERROR] isr_default_handler: Unhandled Exception\n");
+    I386::console.printf("\n----------- Stack ----------\n\n");
+    I386::console.printf("IR: %d\n", state->int_num);
+    I386::console.printf("\n----------------------------\n");
 
     // Stop system
     for (;;)
@@ -30,7 +30,7 @@ kernel::IVT::IVT()
         vector[i] = isr_default_handler;
 }
 
-void kernel::IVT::isr_entry(boot::ISRFrame *const state)
+void kernel::IVT::isr_entry(I386::ISRFrame *const state)
 {
     /** TODO: Stack handling for recursive interrupts */
 
@@ -44,7 +44,7 @@ void kernel::IVT::isr_entry(boot::ISRFrame *const state)
     }
 }
 
-void kernel::IVT::register_isr(const uint32_t n, boot::isr_handler_t isr)
+void kernel::IVT::register_isr(const uint32_t n, I386::isr_handler_t isr)
 {
     if (n < IVT_MAX_VECTORS)
     {

@@ -1,30 +1,27 @@
 #include <stdint.h>
 
-#include <boot/console.hpp>
-#include <boot/gdt.hpp>
-#include <boot/idt.hpp>
-
-#include <arch/io.hpp>
-#include <arch/isr.hpp>
+#include <i386/gdt.hpp>
+#include <i386/idt.hpp>
+#include <i386/isr.hpp>
 
 /***********************
  * IDT Descriptor Class
  ***********************/
 
-boot::IDTDescriptor::IDTDescriptor(uint32_t isr, uint16_t selector, uint8_t flags)
+I386::IDTDescriptor::IDTDescriptor(uint32_t isr, uint16_t selector, uint8_t flags)
 {
     set_isr(isr);
     set_selector(selector);
     set_flags(flags);
 }
 
-void boot::IDTDescriptor::set_isr(uint32_t isr)
+void I386::IDTDescriptor::set_isr(uint32_t isr)
 {
     offset_lo = uint16_t(isr & 0xffff);
     offset_hi = uint16_t((isr >> 16) & 0xffff);
 }
 
-uint32_t boot::IDTDescriptor::get_isr()
+uint32_t I386::IDTDescriptor::get_isr()
 {
     uint32_t isr_handler;
 
@@ -34,27 +31,27 @@ uint32_t boot::IDTDescriptor::get_isr()
     return isr_handler;
 }
 
-void boot::IDTDescriptor::set_selector(uint16_t selector)
+void I386::IDTDescriptor::set_selector(uint16_t selector)
 {
     this->selector = selector;
 }
 
-uint16_t boot::IDTDescriptor::get_selector()
+uint16_t I386::IDTDescriptor::get_selector()
 {
     return selector;
 }
 
-void boot::IDTDescriptor::set_flags(uint8_t flags)
+void I386::IDTDescriptor::set_flags(uint8_t flags)
 {
     this->flags = flags;
 }
 
-uint8_t boot::IDTDescriptor::get_flags()
+uint8_t I386::IDTDescriptor::get_flags()
 {
     return flags;
 }
 
-boot::IDTDescriptor &boot::IDTDescriptor::operator=(boot::IDTDescriptor &other)
+I386::IDTDescriptor &I386::IDTDescriptor::operator=(I386::IDTDescriptor &other)
 {
     if (this != &other) // self-assignment check
     {
@@ -69,9 +66,9 @@ boot::IDTDescriptor &boot::IDTDescriptor::operator=(boot::IDTDescriptor &other)
  * IDT Class
  *******************/
 
-boot::IDT boot::idt;
+I386::IDT I386::idt;
 
-void boot::IDT::flush()
+void I386::IDT::flush()
 {
     idt_reg.limit = sizeof(_idt) - 1;
     idt_reg.base = (uint32_t)_idt;
@@ -80,7 +77,7 @@ void boot::IDT::flush()
 }
 
 template <uint32_t num, bool error_code>
-void boot::IDT::isr_stub(void)
+void I386::IDT::isr_stub(void)
 {
     asm volatile("cli\n\t"
                  // Check if the sub is for exception interrupt
@@ -131,7 +128,7 @@ void boot::IDT::isr_stub(void)
                  :
                  : "i"(error_code),
                    "i"(num),
-                   "i"(boot::KERNEL_DATA_SEGMENT),
+                   "i"(I386::KERNEL_DATA_SEGMENT),
                    "i"(isr_entry));
 }
 
@@ -140,11 +137,11 @@ void boot::IDT::isr_stub(void)
  * 
  */
 
-void boot::IDT::setup()
+void I386::IDT::setup()
 {
 #define SETUP_IRQ(num, error_code)                                      \
-    _idt[num].set_isr((uint32_t)&boot::IDT::isr_stub<num, error_code>); \
-    _idt[num].set_selector(boot::KERNEL_CODE_SEGMENT);                  \
+    _idt[num].set_isr((uint32_t)&I386::IDT::isr_stub<num, error_code>); \
+    _idt[num].set_selector(I386::KERNEL_CODE_SEGMENT);                  \
     _idt[num].set_flags(IDT_DESC_FLAG_PRESENT | IDT_DESC_FLAG_INT_BIT32);
 
     /*

@@ -95,7 +95,7 @@
 
 #include <stdint.h>
 
-namespace boot
+namespace I386
 {
 
 /**
@@ -332,6 +332,6 @@ public:
  */
 extern GDT gdt;
 
-} // namespace boot
+} // namespace I386
 
 #endif /* ARCH_I386_GDT_HPP */

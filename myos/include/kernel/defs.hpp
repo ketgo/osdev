@@ -11,6 +11,6 @@
  * Marker attached to function declarations requiring architecture specific 
  * implementation. These have no default implementation in the core kernel.
  */
-#define __arch_req
+#define __arch
 
 #endif /* DEFS_H */

@@ -14,10 +14,10 @@
 
 #include <stdint.h>
 
-#include <boot/asm.hpp>
-#include <boot/a20.hpp>
-
 #include <arch/io.hpp>
+
+#include <i386/asm.hpp>
+#include <i386/a20.hpp>
 
 #define MAX_8042_LOOPS 100000
 #define MAX_8042_FF 32
@@ -30,9 +30,9 @@ static int empty_8042(void)
 
     while (loops--)
     {
-        boot::io_delay();
+        arch::io_delay();
 
-        status = boot::inb(0x64);
+        status = arch::inb(0x64);
         if (status == 0xff)
         {
             /* FF is a plausible, but very unlikely status */
@@ -42,8 +42,8 @@ static int empty_8042(void)
         if (status & 1)
         {
             /* Read and discard input data */
-            boot::io_delay();
-            (void)boot::inb(0x60);
+            arch::io_delay();
+            (void)arch::inb(0x60);
         }
         else if (!(status & 2))
         {
@@ -88,13 +88,13 @@ static void enable_a20_kbc(void)
 {
     empty_8042();
 
-    boot::outb(0xd1, 0x64); /* Command write */
+    arch::outb(0xd1, 0x64); /* Command write */
     empty_8042();
 
-    boot::outb(0xdf, 0x60); /* A20 on */
+    arch::outb(0xdf, 0x60); /* A20 on */
     empty_8042();
 
-    boot::outb(0xff, 0x64); /* Null command, but UHCI wants it */
+    arch::outb(0xff, 0x64); /* Null command, but UHCI wants it */
     empty_8042();
 }
 
@@ -102,10 +102,10 @@ static void enable_a20_fast(void)
 {
     uint8_t port_a;
 
-    port_a = boot::inb(0x92); /* Configuration port A */
+    port_a = arch::inb(0x92); /* Configuration port A */
     port_a |= 0x02;           /* Enable A20 */
     port_a &= ~0x01;          /* Do not reset machine */
-    boot::outb(port_a, 0x92);
+    arch::outb(port_a, 0x92);
 }
 
 /*
@@ -114,7 +114,7 @@ static void enable_a20_fast(void)
 
 #define A20_ENABLE_LOOPS 255 /* Number of times to try */
 
-int boot::enable_a20(void)
+int I386::enable_a20(void)
 {
     int loops = A20_ENABLE_LOOPS;
     int kbc_err;

@@ -1,1 +1,3 @@
-# All Header Files 
+# NOTE:
+
+All kernel headers are in this folder.

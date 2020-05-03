@@ -8,7 +8,7 @@
 
 #include <stdint.h>
 
-namespace boot
+namespace I386
 {
 /*
  * Architecture-specific interrupt stack frame.
@@ -53,6 +53,6 @@ typedef void (*isr_handler_t)(ISRFrame *const state);
 #define ISR_COM1 36
 #define ISR_SYSCALL 128
 
-} // namespace boot
+} // namespace i386
 
 #endif /* ARCH_I386_ISR_HPP */

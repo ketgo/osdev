@@ -2,9 +2,12 @@
  * Basic assembly routines
  */
 
+#ifndef ARCH_I386_ASM_HPP
+#define ARCH_I386_ASM_HPP
+
 #include <stdint.h>
 
-namespace boot
+namespace I386
 {
 /* These functions are used to reference data in other segments. */
 
@@ -144,4 +147,6 @@ static inline void wrgs32(uint32_t v, addr_t addr)
                  : "ri"(v));
 }
 
-} // namespace boot
+} // namespace I386
+
+#endif /* ARCH_I386_ASM_HPP */

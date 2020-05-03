@@ -1,12 +1,11 @@
 #include <boot/multiboot.hpp>
-#include <boot/console.hpp>
-#include <boot/a20.hpp>
-#include <boot/gdt.hpp>
-#include <boot/idt.hpp>
-#include <boot/pm.hpp>
-
 #include <arch/io.hpp>
-#include <arch/exception.hpp>
+
+#include <i386/console.hpp>
+#include <i386/a20.hpp>
+#include <i386/gdt.hpp>
+#include <i386/idt.hpp>
+#include <i386/pm.hpp>
 
 /**
  * Kernel entry point.
@@ -14,7 +13,7 @@
  * The method is set noreturn attribute as the execution will
  * not return after method call.
  */
-extern "C" void start_kernel(void) __attribute__((noreturn));
+extern "C" void start_kernel(boot::MultibootInfo *multiboot_info) __attribute__((noreturn));
 
 /**
  * Entry point for kernel boot sequence. All real and/or protected mode setup 
@@ -25,36 +24,36 @@ extern "C" void start_kernel(void) __attribute__((noreturn));
 extern "C" void main(boot::MultibootInfo *multiboot_info)
 {
     /** Disable interupts in case they are enabled */
-    boot::cli();
+    arch::cli();
 
     /* Initialize the early-boot console */
-    boot::console.initialize(VGA_COLOR_BLACK, VGA_COLOR_LIGHT_GREY);
-    boot::console.printf("Kernel boot sequence started...\n");
+    I386::console.initialize(I386::VGA_COLOR_BLACK, I386::VGA_COLOR_LIGHT_GREY);
+    I386::console.printf("Kernel boot sequence started...\n");
 
     /** 
      * Enable A20 gate.
      * 
      * TODO: Test with other bootloaders besides GRUB. 
      */
-    boot::console.printf("Enabling A20 gate...\n");
-    if (boot::enable_a20())
+    I386::console.printf("Enabling A20 gate...\n");
+    if (I386::enable_a20())
     {
-        boot::console.printf("A20 gate not responding.\n");
+        I386::console.printf("A20 gate not responding.\n");
     }
 
     /* Setup GDT */
-    boot::console.printf("Setting up GDT...\n");
-    boot::gdt.setup();
+    I386::console.printf("Setting up GDT...\n");
+    I386::gdt.setup();
 
     /* Setup IDT */
-    boot::console.printf("Setting up IDT...\n");
-    boot::idt.setup();
+    I386::console.printf("Setting up IDT...\n");
+    I386::idt.setup();
 
     /* Set system in protected mode in case not already */
-    boot::console.printf("Starting protected mode...\n");
-    boot::start_protected_mode();
+    I386::console.printf("Starting protected mode...\n");
+    I386::start_protected_mode();
 
     /* Starting kernel */
-    boot::console.printf("Starting kernel...\n");
-    start_kernel();
+    I386::console.printf("Starting kernel...\n");
+    start_kernel(multiboot_info);
 }
