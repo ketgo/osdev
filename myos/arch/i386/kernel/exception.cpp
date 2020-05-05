@@ -1,6 +1,7 @@
 #include <stdint.h>
 
-#include <i386/console.hpp>
+#include <kernel/console.hpp>
+
 #include <i386/isr.hpp>
 #include <i386/exception.hpp>
 
@@ -8,7 +9,7 @@
 void I386::divide_by_zero_fault(I386::ISRFrame *const state)
 {
 
-    I386::console.printf("Divide by 0 at physical address [0x%x:0x%x] EFLAGS [0x%x] Error Code: 0x%x", state->cs, state->eip, state->eflags, state->err_code);
+    kernel::console.printf("Divide by 0 at physical address [0x%x:0x%x] EFLAGS [0x%x] Error Code: 0x%x", state->cs, state->eip, state->eflags, state->err_code);
     for (;;)
         ;
 }
@@ -17,7 +18,7 @@ void I386::divide_by_zero_fault(I386::ISRFrame *const state)
 void I386::single_step_trap(I386::ISRFrame *const state)
 {
 
-    I386::console.printf("Single step");
+    kernel::console.printf("Single step");
     for (;;)
         ;
 }
@@ -26,7 +27,7 @@ void I386::single_step_trap(I386::ISRFrame *const state)
 void I386::nmi_trap(I386::ISRFrame *const state)
 {
 
-    I386::console.printf("NMI trap");
+    kernel::console.printf("NMI trap");
     for (;;)
         ;
 }
@@ -35,7 +36,7 @@ void I386::nmi_trap(I386::ISRFrame *const state)
 void I386::breakpoint_trap(I386::ISRFrame *const state)
 {
 
-    I386::console.printf("Breakpoint trap");
+    kernel::console.printf("Breakpoint trap");
     for (;;)
         ;
 }
@@ -44,7 +45,7 @@ void I386::breakpoint_trap(I386::ISRFrame *const state)
 void I386::overflow_trap(I386::ISRFrame *const state)
 {
 
-    I386::console.printf("Overflow trap");
+    kernel::console.printf("Overflow trap");
     for (;;)
         ;
 }
@@ -53,7 +54,7 @@ void I386::overflow_trap(I386::ISRFrame *const state)
 void I386::bounds_check_fault(I386::ISRFrame *const state)
 {
 
-    I386::console.printf("Bounds check fault");
+    kernel::console.printf("Bounds check fault");
     for (;;)
         ;
 }
@@ -62,7 +63,7 @@ void I386::bounds_check_fault(I386::ISRFrame *const state)
 void I386::invalid_opcode_fault(I386::ISRFrame *const state)
 {
 
-    I386::console.printf("Invalid opcode");
+    kernel::console.printf("Invalid opcode");
     for (;;)
         ;
 }
@@ -71,7 +72,7 @@ void I386::invalid_opcode_fault(I386::ISRFrame *const state)
 void I386::no_device_fault(I386::ISRFrame *const state)
 {
 
-    I386::console.printf("Device not found");
+    kernel::console.printf("Device not found");
     for (;;)
         ;
 }
@@ -80,7 +81,7 @@ void I386::no_device_fault(I386::ISRFrame *const state)
 void I386::double_fault_abort(I386::ISRFrame *const state)
 {
 
-    I386::console.printf("Double fault");
+    kernel::console.printf("Double fault");
     for (;;)
         ;
 }
@@ -89,7 +90,7 @@ void I386::double_fault_abort(I386::ISRFrame *const state)
 void I386::invalid_tss_fault(I386::ISRFrame *const state)
 {
 
-    I386::console.printf("Invalid TSS");
+    kernel::console.printf("Invalid TSS");
     for (;;)
         ;
 }
@@ -98,7 +99,7 @@ void I386::invalid_tss_fault(I386::ISRFrame *const state)
 void I386::no_segment_fault(I386::ISRFrame *const state)
 {
 
-    I386::console.printf("Invalid segment");
+    kernel::console.printf("Invalid segment");
     for (;;)
         ;
 }
@@ -107,7 +108,7 @@ void I386::no_segment_fault(I386::ISRFrame *const state)
 void I386::stack_fault(I386::ISRFrame *const state)
 {
 
-    I386::console.printf("Stack fault");
+    kernel::console.printf("Stack fault");
     for (;;)
         ;
 }
@@ -116,7 +117,7 @@ void I386::stack_fault(I386::ISRFrame *const state)
 void I386::general_protection_fault(I386::ISRFrame *const state)
 {
 
-    I386::console.printf("General Protection Fault");
+    kernel::console.printf("General Protection Fault");
     for (;;)
         ;
 }
@@ -130,7 +131,7 @@ void I386::page_fault(I386::ISRFrame *const state)
                  : "=a"(addr)
                  :
                  :);
-    I386::console.printf("Page Fault at 0x%x:0x%x referenced memory at 0x%x", state->cs, state->eip, addr);
+    kernel::console.printf("Page Fault at 0x%x:0x%x referenced memory at 0x%x", state->cs, state->eip, addr);
     for (;;)
         ;
 }
@@ -139,7 +140,7 @@ void I386::page_fault(I386::ISRFrame *const state)
 void I386::fpu_fault(I386::ISRFrame *const state)
 {
 
-    I386::console.printf("FPU Fault");
+    kernel::console.printf("FPU Fault");
     for (;;)
         ;
 }
@@ -148,7 +149,7 @@ void I386::fpu_fault(I386::ISRFrame *const state)
 void I386::alignment_check_fault(I386::ISRFrame *const state)
 {
 
-    I386::console.printf("Alignment Check");
+    kernel::console.printf("Alignment Check");
     for (;;)
         ;
 }
@@ -157,7 +158,7 @@ void I386::alignment_check_fault(I386::ISRFrame *const state)
 void I386::machine_check_abort(I386::ISRFrame *const state)
 {
 
-    I386::console.printf("Machine Check");
+    kernel::console.printf("Machine Check");
     for (;;)
         ;
 }
@@ -166,7 +167,7 @@ void I386::machine_check_abort(I386::ISRFrame *const state)
 void I386::simd_fpu_fault(I386::ISRFrame *const state)
 {
 
-    I386::console.printf("FPU SIMD fault");
+    kernel::console.printf("FPU SIMD fault");
     for (;;)
         ;
 }

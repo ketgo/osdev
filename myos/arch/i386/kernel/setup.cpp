@@ -1,10 +1,10 @@
 #include <i386/idt.hpp>
 #include <i386/exception.hpp>
 
-#include <arch/setup.hpp>
-#include <arch/io.hpp>
+#include <kernel/setup.hpp>
+#include <kernel/ioport.hpp>
 
-void arch::setup()
+void kernel::arch_setup()
 {
     /* Registering exception and fault interrupt handlers */
     I386::idt.register_isr(0, I386::divide_by_zero_fault);
@@ -27,5 +27,5 @@ void arch::setup()
     I386::idt.register_isr(19, I386::simd_fpu_fault);
 
     /** Enable interupts */
-    arch::sti();
+    kernel::sti();
 }

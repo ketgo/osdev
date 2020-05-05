@@ -7,14 +7,14 @@
 
 #include <kernel/defs.hpp>
 
-namespace arch
+namespace kernel
 {
 /**
 * Architecture specific setup routine invoked by the kernel. 
 * Each arch should implement this method.
 */
-void __arch setup();
+void __arch arch_setup();
 
-} // namespace arch
+} // namespace kernel
 
 #endif /* SETUP_HPP */

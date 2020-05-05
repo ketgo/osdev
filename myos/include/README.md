@@ -1,3 +1,1 @@
-# NOTE:
-
-All kernel headers are in this folder.
+All common headers are in this folder.

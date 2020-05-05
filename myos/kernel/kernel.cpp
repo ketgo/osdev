@@ -1,8 +1,9 @@
 #include <boot/multiboot.hpp>
 
-#include <arch/setup.hpp>
-
+#include <kernel/setup.hpp>
 #include <kernel/printf.hpp>
+
+using namespace kernel;
 
 /**
  * Kernel start entry point.
@@ -12,9 +13,9 @@
 extern "C" void start_kernel(boot::MultibootInfo *multiboot_info)
 {
 	// Setup arch
-	arch::setup();
+	arch_setup();
 
-	kernel::printf("Hello, kernel World!\n");
+	printf("Hello, kernel World!\n");
 
 	for (;;)
 		;

@@ -2,15 +2,15 @@
  * Basic IO routines. The implementation of these routines are architecture dependent.
  */
 
-#ifndef IO_HPP
-#define IO_HPP
+#ifndef IOPORT_HPP
+#define IOPORT_HPP
 
 #include <stddef.h>
 #include <stdint.h>
 
 #include <kernel/defs.hpp>
 
-namespace arch
+namespace kernel
 {
 /**
  * Disable interupts.
@@ -94,6 +94,6 @@ void __arch outl(uint32_t value, uint16_t port);
  */
 uint32_t __arch inl(uint16_t port);
 
-} // namespace arch
+} // namespace kernel
 
-#endif /* IO_HPP */
+#endif /* IOPORT_HPP */

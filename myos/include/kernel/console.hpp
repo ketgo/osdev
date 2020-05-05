@@ -4,23 +4,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
-namespace I386
+#include <kernel/defs.hpp>
+
+namespace kernel
 {
-
-/**
- * VGA real mode memory location and attributes. 
- * Remember: We are in Mode 7, i.e. 80 columns by 
- * 25 lines of high resolution text characters.
- */
-
-/** EGA mode memory map start address */
-#define VGA_EGA_MEMORY 0xA0000
-
-/** MDA mode memory map start address */
-#define VGA_MDA_MEMORY 0xB0000
-
-/** CGA mode memory map start address */
-#define VGA_CGA_MEMORY 0xB8000
 
 /** VGA text mode width and height **/
 #define VGA_WIDTH 80
@@ -55,6 +42,14 @@ private:
     uint8_t color;
     uint16_t *buffer;
 
+    /**
+    * Update postion of cursor to the given coordinates.
+    * 
+    * @param column column number of the cursor
+    * @param row row number of the cursor
+    */
+    void update_cursor(uint16_t column, uint16_t row);
+
 public:
     /**
      * Initialize console.
@@ -62,7 +57,7 @@ public:
      * @param fg_color inital forground color
      * @param bg_color inital background color
      */
-    void initialize(VGAColor fg_color, VGAColor bg_color);
+    void __arch initialize(VGAColor fg_color, VGAColor bg_color);
 
     /**
      * Set forground color
@@ -117,9 +112,9 @@ public:
     int printf(const char *s, ...);
 };
 
-/** console used by kernel boot sequence **/
+/** Root console used by kernel for system logs **/
 extern Console console;
 
-} // namespace I386
+} // namespace kernel
 
 #endif /* ARCH_I386_CONSOLE_HPP */

@@ -14,7 +14,7 @@
 
 #include <stdint.h>
 
-#include <arch/io.hpp>
+#include <kernel/ioport.hpp>
 
 #include <i386/asm.hpp>
 #include <i386/a20.hpp>
@@ -30,9 +30,9 @@ static int empty_8042(void)
 
     while (loops--)
     {
-        arch::io_delay();
+        kernel::io_delay();
 
-        status = arch::inb(0x64);
+        status = kernel::inb(0x64);
         if (status == 0xff)
         {
             /* FF is a plausible, but very unlikely status */
@@ -42,8 +42,8 @@ static int empty_8042(void)
         if (status & 1)
         {
             /* Read and discard input data */
-            arch::io_delay();
-            (void)arch::inb(0x60);
+            kernel::io_delay();
+            (void)kernel::inb(0x60);
         }
         else if (!(status & 2))
         {
@@ -88,13 +88,13 @@ static void enable_a20_kbc(void)
 {
     empty_8042();
 
-    arch::outb(0xd1, 0x64); /* Command write */
+    kernel::outb(0xd1, 0x64); /* Command write */
     empty_8042();
 
-    arch::outb(0xdf, 0x60); /* A20 on */
+    kernel::outb(0xdf, 0x60); /* A20 on */
     empty_8042();
 
-    arch::outb(0xff, 0x64); /* Null command, but UHCI wants it */
+    kernel::outb(0xff, 0x64); /* Null command, but UHCI wants it */
     empty_8042();
 }
 
@@ -102,10 +102,10 @@ static void enable_a20_fast(void)
 {
     uint8_t port_a;
 
-    port_a = arch::inb(0x92); /* Configuration port A */
-    port_a |= 0x02;           /* Enable A20 */
-    port_a &= ~0x01;          /* Do not reset machine */
-    arch::outb(port_a, 0x92);
+    port_a = kernel::inb(0x92); /* Configuration port A */
+    port_a |= 0x02;             /* Enable A20 */
+    port_a &= ~0x01;            /* Do not reset machine */
+    kernel::outb(port_a, 0x92);
 }
 
 /*

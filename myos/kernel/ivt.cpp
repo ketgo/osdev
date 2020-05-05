@@ -1,7 +1,7 @@
 #include <stdint.h>
 
 #include <i386/isr.hpp>
-#include <i386/console.hpp>
+#include <kernel/console.hpp>
 
 #include <kernel/ivt.hpp>
 
@@ -9,15 +9,15 @@ I386::isr_handler_t kernel::IVT::vector[IVT_MAX_VECTORS];
 
 static void isr_default_handler(I386::ISRFrame *const state)
 {
-    /** TODO: Use printk instead of console **/
+    /** TODO: Use panic instead of console **/
 
-    I386::console.set_bg_color(I386::VGA_COLOR_BLUE);
-    I386::console.set_fg_color(I386::VGA_COLOR_WHITE);
-    I386::console.clrscr();
-    I386::console.printf("*** [ERROR] isr_default_handler: Unhandled Exception\n");
-    I386::console.printf("\n----------- Stack ----------\n\n");
-    I386::console.printf("IR: %d\n", state->int_num);
-    I386::console.printf("\n----------------------------\n");
+    kernel::console.set_bg_color(kernel::VGA_COLOR_BLUE);
+    kernel::console.set_fg_color(kernel::VGA_COLOR_WHITE);
+    kernel::console.clrscr();
+    kernel::console.printf("*** [ERROR] isr_default_handler: Unhandled Exception\n");
+    kernel::console.printf("\n----------- Stack ----------\n\n");
+    kernel::console.printf("IR: %d\n", state->int_num);
+    kernel::console.printf("\n----------------------------\n");
 
     // Stop system
     for (;;)

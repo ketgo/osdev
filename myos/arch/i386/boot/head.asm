@@ -70,6 +70,9 @@ _start:
 	; multiboot specification the address to this information is stored in 
 	; the ebx register.
 	push dword ebx
+
+	; Disable interupts in case they are enabled
+	cli
  
 	; Enter the high-level kernel. The ABI requires the stack is 16-byte
 	; aligned at the time of the call instruction (which afterwards pushes
