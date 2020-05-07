@@ -1,6 +1,7 @@
 #include <boot/multiboot.hpp>
 
 #include <kernel/console.hpp>
+#include <kernel/ioport.hpp>
 
 #include <i386/a20.hpp>
 #include <i386/gdt.hpp>
@@ -36,6 +37,7 @@ extern "C" void main(boot::MultibootInfo *multiboot_info)
     if (I386::enable_a20())
     {
         kernel::console.printf("A20 gate not responding.\n");
+        kernel::hang();
     }
 
     /* Setup GDT */

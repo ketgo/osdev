@@ -18,6 +18,13 @@ void kernel::rep_nop()
     asm volatile("rep; nop");
 }
 
+void kernel::hang()
+{
+    asm volatile("hlt");
+    // In case thr CPU gets out of halt state due to an interrupt
+    kernel::hang();
+}
+
 void kernel::outb(uint8_t value, uint16_t port)
 {
     asm volatile("outb %0,%1"

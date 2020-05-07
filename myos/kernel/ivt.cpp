@@ -1,27 +1,15 @@
 #include <stdint.h>
 
 #include <i386/isr.hpp>
-#include <kernel/console.hpp>
 
+#include <kernel/panic.hpp>
 #include <kernel/ivt.hpp>
 
 I386::isr_handler_t kernel::IVT::vector[IVT_MAX_VECTORS];
 
 static void isr_default_handler(I386::ISRFrame *const state)
 {
-    /** TODO: Use panic instead of console **/
-
-    kernel::console.set_bg_color(kernel::VGA_COLOR_BLUE);
-    kernel::console.set_fg_color(kernel::VGA_COLOR_WHITE);
-    kernel::console.clrscr();
-    kernel::console.printf("*** [ERROR] isr_default_handler: Unhandled Exception\n");
-    kernel::console.printf("\n----------- Stack ----------\n\n");
-    kernel::console.printf("IR: %d\n", state->int_num);
-    kernel::console.printf("\n----------------------------\n");
-
-    // Stop system
-    for (;;)
-        ;
+    kernel::panic("*** [ERROR] isr_default_handler: Unhandled Exception\n");
 }
 
 kernel::IVT::IVT()

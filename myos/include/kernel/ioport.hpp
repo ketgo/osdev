@@ -34,6 +34,13 @@ void __arch sti();
 void __arch rep_nop();
 
 /**
+ * Hang CPU.
+ * 
+ * Utility method to hang CPU.
+ */
+void __arch __attribute__((noreturn)) hang();
+
+/**
  * Delay I/O
  * 
  * This method can be used to wait a few microseconds for something to complete where 
