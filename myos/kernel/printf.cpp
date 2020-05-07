@@ -3,28 +3,28 @@
 #include <cstdio>
 
 #include <kernel/tty.hpp>
-#include <kernel/printk.hpp>
+#include <kernel/printf.hpp>
 
 #define KPRINTF_BUFSIZ 64
 
 /*
- * Log to the first console.
+ * Print to the first console.
  */
-void printvk(const char *fmt, va_list arg)
+void kernel::vprintf(const char *fmt, va_list args)
 {
     char str[KPRINTF_BUFSIZ];
     int n;
 
-    n = std::vsnprintf(str, KPRINTF_BUFSIZ, fmt, arg);
+    n = std::vsnprintf(str, KPRINTF_BUFSIZ, fmt, args);
     if (n > 0)
         kernel::tty.write(str, (size_t)n);
 }
 
-void kernel::printk(const char *__restrict fmt, ...)
+void kernel::printf(const char *__restrict fmt, ...)
 {
     va_list ap;
 
     va_start(ap, fmt);
-    printvk(fmt, ap);
+    vprintf(fmt, ap);
     va_end(ap);
 }

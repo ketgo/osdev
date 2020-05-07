@@ -2,6 +2,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <kernel/console.hpp>
 #include <kernel/tty.hpp>
 
 kernel::TTY kernel::tty;
@@ -35,8 +36,9 @@ void kernel::TTY::init()
 
 int kernel::TTY::putc(int c)
 {
-    /** TODO: Interface with console */
-    return 0;
+    /** TODO: Multi-console suport implementation logic */
+    kernel::console.putchar(c);
+    return 1;
 }
 
 int kernel::TTY::write(const char *buffer, size_t n)

@@ -78,7 +78,7 @@
 
 #include <kernel/ivt.hpp>
 
-namespace boot
+namespace I386
 {
 
 /**
@@ -227,6 +227,6 @@ public:
  */
 extern IDT idt;
 
-} // namespace boot
+} // namespace I386
 
 #endif /* ARCH_I386_IDT_HPP */

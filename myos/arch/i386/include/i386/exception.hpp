@@ -5,9 +5,9 @@
 #ifndef ARCH_I386_EXCEPTION_HPP
 #define ARCH_I386_EXCEPTION_HPP
 
-#include <arch/isr.hpp>
+#include <i386/isr.hpp>
 
-namespace boot
+namespace I386
 {
 
 /**
@@ -66,6 +66,6 @@ void machine_check_abort(ISRFrame *const state);
 /** Floating Point Unit (FPU) Single Instruction Multiple Data (SIMD) error */
 void simd_fpu_fault(ISRFrame *const state);
 
-} // namespace boot
+} // namespace I386
 
 #endif /* ARCH_I386_EXCEPTION_HPP */

@@ -3,10 +3,37 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include <arch/vga.hpp>
 
-namespace boot
+#include <kernel/defs.hpp>
+
+namespace kernel
 {
+
+/** VGA text mode width and height **/
+#define VGA_WIDTH 80
+#define VGA_HEIGHT 25
+
+/** VGA 16 bit color code */
+enum VGAColor
+{
+    VGA_COLOR_BLACK = 0,
+    VGA_COLOR_BLUE = 1,
+    VGA_COLOR_GREEN = 2,
+    VGA_COLOR_CYAN = 3,
+    VGA_COLOR_RED = 4,
+    VGA_COLOR_MAGENTA = 5,
+    VGA_COLOR_BROWN = 6,
+    VGA_COLOR_LIGHT_GREY = 7,
+    VGA_COLOR_DARK_GREY = 8,
+    VGA_COLOR_LIGHT_BLUE = 9,
+    VGA_COLOR_LIGHT_GREEN = 10,
+    VGA_COLOR_LIGHT_CYAN = 11,
+    VGA_COLOR_LIGHT_RED = 12,
+    VGA_COLOR_LIGHT_MAGENTA = 13,
+    VGA_COLOR_LIGHT_BROWN = 14,
+    VGA_COLOR_WHITE = 15
+};
+
 class Console
 {
 private:
@@ -15,6 +42,14 @@ private:
     uint8_t color;
     uint16_t *buffer;
 
+    /**
+    * Update postion of cursor to the given coordinates.
+    * 
+    * @param column column number of the cursor
+    * @param row row number of the cursor
+    */
+    void update_cursor(uint16_t column, uint16_t row);
+
 public:
     /**
      * Initialize console.
@@ -22,7 +57,7 @@ public:
      * @param fg_color inital forground color
      * @param bg_color inital background color
      */
-    void initialize(VGAColor fg_color, VGAColor bg_color);
+    void __arch initialize(VGAColor fg_color, VGAColor bg_color);
 
     /**
      * Set forground color
@@ -77,9 +112,9 @@ public:
     int printf(const char *s, ...);
 };
 
-/** console used by kernel boot sequence **/
+/** Root console used by kernel for system logs **/
 extern Console console;
 
-} // namespace boot
+} // namespace kernel
 
 #endif /* ARCH_I386_CONSOLE_HPP */
