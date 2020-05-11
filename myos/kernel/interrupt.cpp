@@ -1,13 +1,13 @@
 #include <stdint.h>
 
-#include <i386/isr.hpp>
+#include <arch/isr.hpp>
 
 #include <kernel/panic.hpp>
-#include <kernel/ivt.hpp>
+#include <kernel/interrupt.hpp>
 
-I386::isr_handler_t kernel::IVT::vector[IVT_MAX_VECTORS];
+kernel::isr_handler_t kernel::IVT::vector[IVT_MAX_VECTORS];
 
-static void isr_default_handler(I386::ISRFrame *const state)
+static void isr_default_handler(kernel::ISRFrame *const state)
 {
     kernel::panic("*** [ERROR] isr_default_handler: Unhandled Exception\n");
 }
@@ -18,7 +18,7 @@ kernel::IVT::IVT()
         vector[i] = isr_default_handler;
 }
 
-void kernel::IVT::isr_entry(I386::ISRFrame *const state)
+void kernel::IVT::isr_entry(kernel::ISRFrame *const state)
 {
     /** TODO: Stack handling for recursive interrupts */
 
@@ -32,7 +32,7 @@ void kernel::IVT::isr_entry(I386::ISRFrame *const state)
     }
 }
 
-void kernel::IVT::register_isr(const uint32_t n, I386::isr_handler_t isr)
+void kernel::IVT::register_isr(const uint32_t n, kernel::isr_handler_t isr)
 {
     if (n < IVT_MAX_VECTORS)
     {

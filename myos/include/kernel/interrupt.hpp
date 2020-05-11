@@ -6,14 +6,12 @@
  * Author: Ketan Goyal
  */
 
-#ifndef IRQ_HPP
-#define IRQ_HPP
+#ifndef INTERRUPT_HPP
+#define INTERRUPT_HPP
 
 #include <stdint.h>
 
-/** TODO: Arch specific code to fix */
-
-#include <i386/isr.hpp>
+#include <arch/isr.hpp>
 
 namespace kernel
 {
@@ -34,7 +32,7 @@ private:
     /**
      * Array of interrupt vectors, a.k.a interrupt handlers.
      */
-    static I386::isr_handler_t vector[IVT_MAX_VECTORS];
+    static isr_handler_t vector[IVT_MAX_VECTORS];
 
 protected:
     /**
@@ -43,7 +41,7 @@ protected:
      * 
      * @param state pointer to interrupt stack frame containing CPU state
      */
-    static void isr_entry(I386::ISRFrame *const state);
+    static void isr_entry(ISRFrame *const state);
 
 public:
     /** Default constructor */
@@ -55,9 +53,9 @@ public:
      * @param n interrupt number to be assigned to ISR
      * @param isr function pointer to ISR
      */
-    static void register_isr(const uint32_t n, I386::isr_handler_t isr);
+    static void register_isr(const uint32_t n, isr_handler_t isr);
 };
 
 } // namespace kernel
 
-#endif /* IRQ_HPP */
+#endif /* INTERRUPT_HPP */

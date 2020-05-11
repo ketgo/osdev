@@ -71,12 +71,12 @@
  * Entries 22 to 31 are reserved by Intel.
  */
 
-#ifndef ARCH_I386_IDT_HPP
-#define ARCH_I386_IDT_HPP
+#ifndef ARCH_I386_HPP
+#define ARCH_I386_HPP
 
 #include <stdint.h>
 
-#include <kernel/ivt.hpp>
+#include <kernel/interrupt.hpp>
 
 namespace I386
 {
@@ -116,117 +116,135 @@ namespace I386
  */
 #define IDT_DESC_FLAG_PRESENT 0x80
 
-/** 
- * Interrupt descriptor class.
- * 
- * NOTE: Please do not add any virtual methods in the class definition. Doing so will 
- * change the memory layout causing undefined behaviour and most likely triple fault. 
- * Only plain member methods should be added. 
- */
-class __attribute__((packed)) IDTDescriptor
-{
-private:
-    uint16_t offset_lo;     /**< The lower 16 bits of the ISR address to jump to. */
-    uint16_t selector;      /**< Code segment selector in GDT. */
-    const uint8_t zero = 0; /**< This must always be zero. */
-    uint8_t flags;          /**< More flags. See documentation. */
-    uint16_t offset_hi;     /**< The upper 16 bits of the ISR address to jump to. */
-public:
-    /**
-     * Default constructor.
-     */
-    IDTDescriptor(){};
-
-    /**
-     * Initialization constructor.
+    /** 
+     * Interrupt descriptor class.
      * 
-     * @param isr pointer to ISR
-     * @param selector code selector
-     * @param flags descriptor flags to set
+     * NOTE: Please do not add any virtual methods in the class definition. Doing so will 
+     * change the memory layout causing undefined behaviour and most likely triple fault. 
+     * Only plain member methods should be added. 
      */
-    IDTDescriptor(uint32_t isr, uint16_t selector, uint8_t flags);
+    class __attribute__((packed)) IDTDescriptor
+    {
+    private:
+        uint16_t offset_lo;     /**< The lower 16 bits of the ISR address to jump to. */
+        uint16_t selector;      /**< Code segment selector in GDT. */
+        const uint8_t zero = 0; /**< This must always be zero. */
+        uint8_t flags;          /**< More flags. See documentation. */
+        uint16_t offset_hi;     /**< The upper 16 bits of the ISR address to jump to. */
+    public:
+        /**
+         * Default constructor.
+         */
+        IDTDescriptor(){};
+
+        /**
+         * Initialization constructor.
+         * 
+         * @param isr pointer to ISR
+         * @param selector code selector
+         * @param flags descriptor flags to set
+         */
+        IDTDescriptor(uint32_t isr, uint16_t selector, uint8_t flags);
+
+        /**
+         * Set interrupt service routine (ISR).
+         * 
+         * @param isr address of ISR
+         */
+        void set_isr(uint32_t isr);
+
+        /**
+         * Get interrupt service routine (ISR)
+         * 
+         * @returns address of ISR
+         */
+        uint32_t get_isr();
+
+        /**
+         * Set code segment selector.
+         * 
+         * @param selector code selector
+         */
+        void set_selector(uint16_t selector);
+
+        /**
+         * Get code segment selector.
+         * 
+         * @returns code selector
+         */
+        uint16_t get_selector();
+
+        /**
+         * Set interrupt descriptor flags
+         * 
+         * @param flags descriptor flags to set
+         */
+        void set_flags(uint8_t flags);
+
+        /**
+         * Get descriptor flags
+         * 
+         * @returns descriptor flags
+         */
+        uint8_t get_flags();
+
+        /**
+         * Descriptor assignment operator
+         */
+        IDTDescriptor &operator=(IDTDescriptor &other);
+    };
 
     /**
-     * Set interrupt service routine (ISR).
-     * 
-     * @param isr pointer to ISR
+     * A struct describing a pointer to an array of interrupt handlers.
+     * This is in a format suitable for giving to 'lidt'.
      */
-    void set_isr(uint32_t isr);
-    uint32_t get_isr();
+    struct __attribute__((packed)) IDTRegister
+    {
+        uint16_t limit; /**< Size of idt table minus one. */
+        uint32_t base;  /**< The first entry address. */
+    };
 
     /**
-     * Set code segment selector configured in GDT.
-     * 
-     * @param selector code selector
+     * The IDT class containing an array of descriptors.
      */
-    void set_selector(uint16_t selector);
-    uint16_t get_selector();
+    class IDT : public kernel::IVT
+    {
+    private:
+        IDTRegister reg;                     /**< IDT register used by x86 arch processors to load Interrupt vectors */
+        IDTDescriptor _idt[IDT_MAX_DESCRIPTORS]; /**< Array of descriptors. */
+
+        /**
+         * Interrupt Service Request (ISR) entry and exit stub template. 
+         * 
+         * The template sets up the stack frame for an ISR. This is needed since 
+         * the standard C++ stack frame setup for functions is inconsistent with 
+         * that required for interrupts. The underlying assembly instructions for
+         * a standard function call uses ret to return while an interrupt uses iret.
+         * 
+         * @param n interrupt number associated with ISR
+         * @param error_code boolean indcating interrupt is passed with error code. 
+         *  If not a bogus error code is pushed passed to ISR handler stack frame.
+         */
+        template <uint32_t n, bool error_code>
+        static void isr_stub(void);
+
+    public:
+        /**
+         * Setup IDT with default descriptors. 
+         */
+        void setup();
+
+        /**
+         * Install the set descriptors in IDT using the `lidt` instruction.
+         */
+        void flush();
+    };
 
     /**
-     * Set interrupt descriptor flags
-     * 
-     * @param flags descriptor flags to set
+     * IDT for kernel boot sequence
      */
-    void set_flags(uint8_t flags);
-    uint8_t get_flags();
-
-    /**
-     * Descriptor assignment operator
-     */
-    IDTDescriptor &operator=(IDTDescriptor &other);
-};
-
-/**
- * A struct describing a pointer to an array of interrupt handlers.
- * This is in a format suitable for giving to 'lidt'.
- */
-struct __attribute__((packed)) IDTRegister
-{
-    uint16_t limit; /**< Size of idt table minus one. */
-    uint32_t base;  /**< The first entry address. */
-};
-
-/**
- * The IDT class containing an array of descriptors.
- */
-class IDT : public kernel::IVT
-{
-private:
-    IDTRegister idt_reg;                     /**< IDT register used by x86 arch processors to load Interrupt vectors */
-    IDTDescriptor _idt[IDT_MAX_DESCRIPTORS]; /**< Array of descriptors. */
-
-    /**
-     * Interrupt Service Request (ISR) entry and exit stub template. 
-     * 
-     * The template sets up the stack frame for an ISR. This is needed since 
-     * the standard C++ stack frame setup for functions is inconsistent with 
-     * that required for interrupts. The underlying assembly instructions for
-     * a standard function call uses ret to return while an interrupt uses iret.
-     * 
-     * @param n interrupt number associated with ISR
-     * @param error_code boolean indcating interrupt is passed with error code. 
-     *  If not a bogus error code is pushed passed to ISR handler stack frame.
-     */
-    template <uint32_t n, bool error_code>
-    static void isr_stub(void);
-
-public:
-    /**
-    * Setup IDT with default descriptors. 
-    */
-    void setup();
-
-    /**
-     * Install the set descriptors in IDT using the `lidt` instruction.
-     */
-    void flush();
-};
-
-/**
- * IDT for kernel boot sequence
- */
-extern IDT idt;
+    extern IDT idt;
 
 } // namespace I386
 
-#endif /* ARCH_I386_IDT_HPP */
+#endif /* ARCH_I386_HPP */

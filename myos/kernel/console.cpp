@@ -39,17 +39,27 @@ int kernel::Console::putchar(int c)
     unsigned char uc = (unsigned char)c;
     const size_t index = row * VGA_WIDTH + column;
 
-    buffer[index] = uc | (uint16_t)color << 8;
-    if (++column == VGA_WIDTH)
+    // Check for new line
+    if (uc == '\n')
     {
         column = 0;
-        if (++row == VGA_HEIGHT)
+        row++;
+    }
+    else
+    {
+
+        buffer[index] = uc | (uint16_t)color << 8;
+        if (++column == VGA_WIDTH)
         {
-            row = 0;
-        }
-        else
-        {
-            row++;
+            column = 0;
+            if (++row == VGA_HEIGHT)
+            {
+                row = 0;
+            }
+            else
+            {
+                row++;
+            }
         }
     }
     update_cursor(column, row);
@@ -57,20 +67,17 @@ int kernel::Console::putchar(int c)
     return 1;
 }
 
-int kernel::Console::puts(const char *s)
+int kernel::Console::vprintf(const char *s, va_list args)
 {
     int written = 0;
     size_t size = std::strlen(s);
+    char buff[size];
+
+    std::vsnprintf(buff, size, s, args);
 
     for (size_t i = 0; i < size; i++)
     {
-        if (s[i] == '\n')
-        {
-            column = 0;
-            row++;
-            continue;
-        }
-        putchar(s[i]);
+        putchar(buff[i]);
         written++;
     }
 
@@ -79,12 +86,12 @@ int kernel::Console::puts(const char *s)
 
 int kernel::Console::printf(const char *s, ...)
 {
-    char buff[VGA_WIDTH];
+    int written;
     va_list args;
 
     va_start(args, s);
-    std::vsnprintf(buff, VGA_WIDTH, s, args);
+    written = vprintf(s, args);
     va_end(args);
 
-    return puts(buff);
+    return written;
 }

@@ -3,6 +3,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <stdarg.h>
 
 #include <kernel/defs.hpp>
 
@@ -95,12 +96,14 @@ public:
     int putchar(int c);
 
     /**
-     * Display a string of char on console
-     * 
-     * @param s pointer to string of char
-     * @returns number of char displayed
-     */
-    int puts(const char *s);
+    * Display a formated string on consol with 
+    * variable arguments
+    *  
+    * @param s pointer to string of char
+    * @param args additional arguments
+    * @returns number of char displayed
+    */
+    int vprintf(const char *s, va_list args);
 
     /**
      * Display a formated string of char on console

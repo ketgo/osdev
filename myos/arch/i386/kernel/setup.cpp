@@ -1,4 +1,6 @@
 #include <i386/idt.hpp>
+#include <i386/pic.hpp>
+#include <i386/pit.hpp>
 #include <i386/exception.hpp>
 
 #include <kernel/setup.hpp>

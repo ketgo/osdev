@@ -2,7 +2,6 @@
 
 #include <i386/gdt.hpp>
 #include <i386/idt.hpp>
-#include <i386/isr.hpp>
 
 /***********************
  * IDT Descriptor Class
@@ -70,10 +69,10 @@ I386::IDT I386::idt;
 
 void I386::IDT::flush()
 {
-    idt_reg.limit = sizeof(_idt) - 1;
-    idt_reg.base = (uint32_t)_idt;
+    reg.limit = sizeof(_idt) - 1;
+    reg.base = (uint32_t)_idt;
 
-    asm volatile("lidtl   %0\n\t" ::"m"(idt_reg));
+    asm volatile("lidtl   %0\n\t" ::"m"(reg));
 }
 
 template <uint32_t num, bool error_code>

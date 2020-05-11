@@ -7,10 +7,11 @@ namespace kernel
 {
 
 /**
- * vprintf - print text string on system consol with variable arguments
+ * vprintf - print text string on system consol with 
+ * variable arguments
  * 
  * This method should be used to print from inside
- * the kernel.
+ * the kernel as it uses high level TTY interfaces.
  * 
  * @param fmt text string to print 
  * @param args additional arguments
@@ -21,11 +22,11 @@ void vprintf(const char *fmt, va_list args);
  * printf - print text string on system consol
  * 
  * This method should be used to print from inside
- * the kernel.
+ * the kernel as it uses high level TTY interfaces.
  *
  * @param fmt text string to print
  */
-void printf(const char *__restrict fmt, ...);
+void printf(const char *fmt, ...);
 
 } // namespace kernel
 
