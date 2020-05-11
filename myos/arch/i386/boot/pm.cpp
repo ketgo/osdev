@@ -26,6 +26,6 @@ void I386::start_protected_mode()
 {
     asm volatile(
         "movl %cr0, %eax\n\t"
-        "orb $1, %eax\n\t"
+        "orl $1, %eax\n\t"
         "movl %eax, %cr0\n\t");
 }

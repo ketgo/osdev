@@ -95,37 +95,17 @@
 
 #include <stdint.h>
 
-namespace I386
-{
-
 /**
- * Maximum number of descriptors in GDT. The first descriptor is always
- * Null descriptor in compliance with x86 processors.
+ * Maximum number of descriptors in GDT. 
+ * 
+ * NOTE: The first descriptor is always Null descriptor in compliance 
+ * with x86 processors.
  */
 #define GDT_MAX_DESCRIPTORS 3
 
-/**
- * Enumerated list of different segment selectors.
- */
-enum Selectors
-{
-    /** 
-    * Kernel code segment is set at an offset of 8 bytes, which is 
-    * 0x08 in hex, from the base address of GDT. This is set in 
-    * the initialize() method of the GDT class.
-    */
-    KERNEL_CODE_SEGMENT = 0X08,
-    /** 
-    * Kernel data segment is set at an offset of 16 bytes, which is 
-    * 0x10 in hex, from the base address of GDT. This is set in the 
-    * initialize() method. of the GDT class.
-    */
-    KERNEL_DATA_SEGMENT = 0X10
-};
-
-/**
- * Enumerated list of GDT descriptor access bits
- */
+//------------------------------------------------
+// Enumerated list of GDT descriptor access bits
+//------------------------------------------------
 
 /**
  * Sets Readable/Writable bit. [Default unset]
@@ -209,128 +189,152 @@ enum Selectors
  */
 #define GDT_DESC_FLAG_AVL 0x10
 
-/**
- * GDT descriptor class.
- * 
- * NOTE: Please do not add any virtual methods in the class definition. Doing so will 
- * change the memory layout causing undefined behaviour and most likely triple fault. 
- * Only plain membor methods should be added.
- */
-class __attribute__((packed)) GDTDescriptor
+namespace I386
 {
-private:
-    uint16_t limit_lo; /**< The lower 16 bits of the limit (15..0). */
-    uint16_t base_lo;  /**< The lowers 16 bits of the base (15..0). */
-    uint8_t base_mid;  /**< The next 8 bits of the base (23..16). */
-    uint8_t access;    /**< Pr, DPL, S, Ex, DC, RW, Ac. */
-    uint8_t flags;     /**< Gr, Sz, Limit High (19..16). */
-    uint8_t base_hi;   /**< The last 8 bits of the base (31..24). */
+    namespace GDT
+    {
 
-public:
-    /**
-     * Default constructor.
-     */
-    GDTDescriptor(){};
+        /**
+         * Enumerated list of different segment selectors.
+         */
+        enum Selector
+        {
+            /** 
+             * Kernel code segment is set at an offset of 8 bytes, which is 
+             * 0x08 in hex, from the base address of GDT. This is set in 
+             * the initialize() method of the GDT class.
+             */
+            KERNEL_CODE_SEGMENT = 0X08,
+            /** 
+             * Kernel data segment is set at an offset of 16 bytes, which is 
+             * 0x10 in hex, from the base address of GDT. This is set in the 
+             * initialize() method. of the GDT class.
+            */
+            KERNEL_DATA_SEGMENT = 0X10
+        };
 
-    /**
-     * Initialization constructor.
-     * 
-     * @param base starting address of memory segment
-     * @param limit ending address of memory segment
-     * @param access access properties of memory segment
-     * @param flags flags of memory segment
-     */
-    GDTDescriptor(uint32_t base, uint32_t limit, uint8_t access, uint8_t flags);
+        /**
+         * GDT descriptor class.
+         * 
+         * NOTE: Please do not add any virtual methods in the class definition. Doing so will 
+         * change the memory layout causing undefined behaviour and most likely triple fault. 
+         * Only plain membor methods should be added.
+         */
+        class __attribute__((packed)) Descriptor
+        {
+        private:
+            uint16_t limit_lo; /**< The lower 16 bits of the limit (15..0). */
+            uint16_t base_lo;  /**< The lowers 16 bits of the base (15..0). */
+            uint8_t base_mid;  /**< The next 8 bits of the base (23..16). */
+            uint8_t access;    /**< Pr, DPL, S, Ex, DC, RW, Ac. */
+            uint8_t flags;     /**< Gr, Sz, Limit High (19..16). */
+            uint8_t base_hi;   /**< The last 8 bits of the base (31..24). */
 
-    /**
-     * Set memory segment starting address
-     * 
-     * @param base starting address
-     */
-    void set_base(uint32_t base);
-    uint32_t get_base();
+        public:
+            /**
+             * Default constructor.
+             */
+            Descriptor(){};
 
-    /**
-     * Set memory segment ending address
-     * 
-     * @param limit ending address
-     */
-    void set_limit(uint32_t limit);
-    uint32_t get_limit();
+            /**
+             * Initialization constructor.
+             * 
+             * @param base starting address of memory segment
+             * @param limit ending address of memory segment
+             * @param access access properties of memory segment
+             * @param flags flags of memory segment
+             */
+            Descriptor(uint32_t base, uint32_t limit, uint8_t access, uint8_t flags);
 
-    /**
-     * Set memory segment access properties
-     * 
-     * @param access access properties
-     */
-    void set_access(uint8_t access);
-    uint8_t get_access();
+            /**
+             * Set memory segment starting address
+             * 
+             * @param base starting address
+             */
+            void set_base(uint32_t base);
 
-    /**
-     * Set memory segment flags
-     * 
-     * @param flags segment flags
-     */
-    void set_flags(uint8_t flags);
-    uint8_t get_flags();
+            /**
+             * Get memory segment starting address
+             * 
+             * @returns segment starting address
+             */
+            uint32_t get_base();
 
-    /**
-     * Descriptor assignment operator
-     */
-    GDTDescriptor &operator=(GDTDescriptor &other);
-};
+            /**
+             * Set memory segment ending address
+             * 
+             * @param limit segment ending address
+             */
+            void set_limit(uint32_t limit);
 
-/**
- * This struct describes a GDT pointer. It points to the start of our array of
- * GDT entries, and is in the format required by the lgdt instruction.
- */
-struct __attribute__((packed)) GDTRegister
-{
-    uint16_t limit; /**< Size of gdt table minus one. */
-    uint32_t base;  /**< The base table address. */
-};
+            /**
+             * Get memory segment ending address
+             * 
+             * @returns segment ending address
+             */
+            uint32_t get_limit();
 
-/**
- * The GDT class containing an array of descriptors.
- */
-class GDT
-{
-private:
-    GDTRegister gdt_reg;                     /**< GDT register to load descriptors */
-    GDTDescriptor _gdt[GDT_MAX_DESCRIPTORS]; /**< Array of global descriptors. */
+            /**
+             * Set memory segment access properties
+             * 
+             * @param access access properties
+             */
+            void set_access(uint8_t access);
 
-public:
-    /**
-    * Setup GDT with default descriptors.
-    */
-    void setup();
+            /**
+             * Get memory segment access properties
+             * 
+             * @returns access properties
+             */
+            uint8_t get_access();
 
-    /**
-     * Install the set descriptors in GDT using the `lgdt` instruction.
-     */
-    void flush();
+            /**
+             * Set memory segment flags
+             * 
+             * @param flags segment flags
+             */
+            void set_flags(uint8_t flags);
 
-    /**
-     * Set descriptor in GDT.
-     * 
-     * @param idx index position of the descriptor in table
-     * @param gdt_desc pointer to GDT descriptor
-     */
-    void set_descriptor(uint32_t idx, GDTDescriptor *gdt_desc);
+            /**
+             * Get memroy segment flags
+             * 
+             * @returns segment flags
+             */
+            uint8_t get_flags();
 
-    /**
-     * Get descriptor in GDT.
-     * 
-     * @param idx index postion of the descriptor to get
-     * @returns pointer to descriptor
-     */
-    const GDTDescriptor *get_descriptor(uint32_t idx);
-};
+            /**
+             * Descriptor assignment operator
+             */
+            Descriptor &operator=(Descriptor &other);
+        };
 
-/**
- * GDT for kernel boot sequence
- */
-extern GDT gdt;
+        /**
+         * Setup GDT with default descriptors.
+         */
+        void setup();
+
+        /**
+         * Install the set descriptors in GDT using the `lgdt` instruction.
+         */
+        void flush();
+
+        /**
+         * Set descriptor in GDT.
+         * 
+         * @param idx index position of the descriptor in table
+         * @param desc pointer to GDT descriptor
+         */
+        void set_descriptor(uint32_t idx, Descriptor *desc);
+
+        /**
+         * Get descriptor in GDT.
+         * 
+         * @param idx index postion of the descriptor to get
+         * @returns pointer to descriptor
+         */
+        const Descriptor *get_descriptor(uint32_t idx);
+
+    } // namespace GDT
 
 } // namespace I386
 

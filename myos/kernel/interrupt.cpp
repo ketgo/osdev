@@ -5,17 +5,23 @@
 #include <kernel/panic.hpp>
 #include <kernel/interrupt.hpp>
 
-kernel::isr_handler_t kernel::IVT::vector[IVT_MAX_VECTORS];
+/**
+ * Array of interrupt vectors mapping interrupt numbers to corresponding
+ * handlers.
+ */
+static kernel::isr_handler_t vector[IVT_MAX_VECTORS];
 
+/**
+ * Default interrupt handler
+ * 
+ * NOTE: Called when no interrupt handler is registered for the triggered
+ *      interrupt number.
+ * 
+ * @param state pointer to ISR stack frame
+ */
 static void isr_default_handler(kernel::ISRFrame *const state)
 {
     kernel::panic("*** [ERROR] isr_default_handler: Unhandled Exception\n");
-}
-
-kernel::IVT::IVT()
-{
-    for (uint32_t i = 0; i < IVT_MAX_VECTORS; ++i)
-        vector[i] = isr_default_handler;
 }
 
 void kernel::IVT::isr_entry(kernel::ISRFrame *const state)
@@ -24,7 +30,14 @@ void kernel::IVT::isr_entry(kernel::ISRFrame *const state)
 
     if (state->int_num < IVT_MAX_VECTORS)
     {
-        vector[state->int_num](state);
+        if (vector[state->int_num] != nullptr)
+        {
+            vector[state->int_num](state);
+        }
+        else
+        {
+            isr_default_handler(state);
+        }
     }
     else
     {
