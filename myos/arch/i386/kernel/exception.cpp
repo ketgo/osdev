@@ -1,7 +1,9 @@
 #include <stdint.h>
 
 #include <kernel/panic.hpp>
+
 #include <arch/isr.hpp>
+
 #include <i386/exception.hpp>
 
 //! divide by 0 fault

@@ -8,7 +8,7 @@
 
 void kernel::arch_setup()
 {
-    /* Registering exception and fault interrupt handlers */
+    // Registering exception and fault interrupt handlers
     IVT::register_isr(0, I386::divide_by_zero_fault);
     IVT::register_isr(1, I386::single_step_trap);
     IVT::register_isr(2, I386::nmi_trap);
@@ -27,6 +27,9 @@ void kernel::arch_setup()
     IVT::register_isr(17, I386::alignment_check_fault);
     IVT::register_isr(18, I386::machine_check_abort);
     IVT::register_isr(19, I386::simd_fpu_fault);
+
+    // Setup PICs for hardware interrupts
+    I386::PIC::setup();
 
     /** Enable interupts */
     sti();
