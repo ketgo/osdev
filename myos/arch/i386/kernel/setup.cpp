@@ -3,7 +3,7 @@
 #include <i386/exception.hpp>
 
 #include <kernel/setup.hpp>
-#include <kernel/interrupt.hpp>
+#include <kernel/isr.hpp>
 #include <kernel/ioport.hpp>
 
 void kernel::arch_setup()

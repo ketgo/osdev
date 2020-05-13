@@ -5,10 +5,12 @@
  * Author: Ketan Goyal
  */
 
-#ifndef INTERRUPT_HPP
-#define INTERRUPT_HPP
+#ifndef ISR_HPP
+#define ISR_HPP
 
 #include <stdint.h>
+
+#include <kernel/defs.hpp>
 
 #include <arch/isr.hpp>
 
@@ -19,6 +21,22 @@
 
 namespace kernel
 {
+    /**
+     * ISR Stack Frame
+     * 
+     * The stack frame of ISR containing arch specific and non-specifc
+     * data members.
+     */
+    struct __attribute__((packed)) ISRFrame
+    {
+        uint32_t n;   // interrupt number to be assigned to ISR
+        ISRArg arg; // arch specific arguments for ISR
+    };
+
+    /** 
+     * ISR function pointer typedef
+     */
+    typedef void (*isr_handler_t)(ISRFrame *const frame);
 
     /**
      * Interrupt Vector Table (IVT)
@@ -28,17 +46,16 @@ namespace kernel
      */
     namespace IVT
     {
-
         /**
-         * Common interrupt handler entry point. This method has the same
-         * signature as an interrupt handler.
+         * Common interrupt handler entry point having the same signature as an 
+         * interrupt handler.
          * 
          * NOTE: Arch specifc code should implementate interrupt entry stubs
          *      redirecting execution to this method.
          * 
-         * @param state pointer to interrupt stack frame containing CPU state
+         * @param frame pointer to interrupt stack frame
          */
-        void isr_entry(ISRFrame *const state);
+        void isr_entry(ISRFrame *const frame);
 
         /**
          * Register Interrupt Service Routine (ISR) in Interrupt Vector Table (IVT).
@@ -52,4 +69,4 @@ namespace kernel
 
 } // namespace kernel
 
-#endif /* INTERRUPT_HPP */
+#endif /* ISR_HPP */

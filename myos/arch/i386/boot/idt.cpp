@@ -3,7 +3,7 @@
 #include <i386/gdt.hpp>
 #include <i386/idt.hpp>
 
-#include <kernel/interrupt.hpp>
+#include <kernel/isr.hpp>
 
 //---
 
@@ -87,12 +87,14 @@ static I386::IDT::Descriptor idt[IDT_MAX_DESCRIPTORS]; /**< Array of descriptors
  * 
  * The template sets up the stack frame for an ISR. This is needed since 
  * the standard C++ stack frame setup for functions is inconsistent with 
- * that required for interrupts. The underlying assembly instructions for
- * a standard function call uses ret to return while an interrupt uses iret.
+ * that required for interrupts due to the difference in the ret and iret
+ * assembly instructions. After setting up the stack frame, the ISR stub 
+ * redirects execution to the common interrupt handler entry point 
+ * `kernel::IVT::isr_entry`.
  * 
  * @param n interrupt number associated with ISR
  * @param error_code boolean indcating interrupt is passed with error code. 
- *  If not a bogus error code is pushed passed to ISR handler stack frame.
+ *  If not a bogus error code is passed to ISR handler stack frame.
  */
 template <uint32_t num, bool error_code>
 static void isr_stub(void)
@@ -106,8 +108,6 @@ static void isr_stub(void)
                  "push $0\n\t"
                  // End of if marco
                  ".endif\n\t"
-                 // Push interrupt number to stack frame
-                 "push %1\n\t"
                  // Pushes edi,esi,ebp,esp,ebx,edx,ecx,eax
                  "pusha\n\t"
                  // Get the original data segment descriptor
@@ -120,15 +120,16 @@ static void isr_stub(void)
                  "mov %%ax, %%es\n\t"
                  "mov %%ax, %%fs\n\t"
                  "mov %%ax, %%gs\n\t"
-                 // Push a pointer to an isr_frame struct
+                 // Push interrupt number to stack frame
+                 "push %1\n\t"
+                 // Push a pointer to an stack frame used by the ISR handler common entry point
                  "push %%esp\n\t"
-                 // Call ISR handler common entry point
+                 // Call the ISR handler common entry point
                  "mov %3, %%eax\n\t"
                  "call *%%eax\n\t"
-                 // Unwind the stack by reducing stack size by the size of pointer
-                 // to isr_frame struct. This is done to unload the isr_frame struct
-                 // pointer pushed to stack earlier.
-                 "add  $4, %%esp\n\t"
+                 // Unwind the stack by reducing stack size by the 8 bytes
+                 // This is done to unload the stack frame pointer and isr number
+                 "add  $8, %%esp\n\t"
                  // Reload the original data segment descriptor
                  "pop  %%eax\n\t"
                  "mov  %%ax, %%ds\n\t"
@@ -137,8 +138,8 @@ static void isr_stub(void)
                  "mov  %%ax, %%gs\n\t"
                  // Pop edi,esi,ebp,esp,ebx,edx,ecx,eax
                  "popa\n\t"
-                 // Clean up the pushed error code and isr number
-                 "add  $8, %%esp\n\t"
+                 // Unload the pushed error code
+                 "add  $4, %%esp\n\t"
                  // Enable interrupts
                  "sti\n\t"
                  // pops 5 things at once: cs,eip,eflags,ss,esp
@@ -225,9 +226,9 @@ void I386::IDT::setup()
      * Setup default handlers for rest of the interrupts
      */
 
-    SETUP_IRQ(32, true);
-    SETUP_IRQ(33, true);
-    SETUP_IRQ(34, true);
+    SETUP_IRQ(32, false);
+    SETUP_IRQ(33, false);
+    SETUP_IRQ(34, false);
     SETUP_IRQ(35, false);
     SETUP_IRQ(36, false);
     SETUP_IRQ(37, false);
@@ -246,7 +247,7 @@ void I386::IDT::setup()
      * Software interrupt (used by syscalls) 
      */
 
-    SETUP_IRQ(128, false); // Commonly used IRQ number used for syscalls.
+    SETUP_IRQ(ISR_SYSCALL, false); // Commonly used IRQ number used for syscalls.
 
 #undef SETUP_IRQ
 

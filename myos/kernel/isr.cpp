@@ -1,9 +1,7 @@
 #include <stdint.h>
 
-#include <arch/isr.hpp>
-
 #include <kernel/panic.hpp>
-#include <kernel/interrupt.hpp>
+#include <kernel/isr.hpp>
 
 /**
  * Array of interrupt vectors mapping interrupt numbers to corresponding
@@ -17,31 +15,31 @@ static kernel::isr_handler_t vector[IVT_MAX_VECTORS];
  * NOTE: Called when no interrupt handler is registered for the triggered
  *      interrupt number.
  * 
- * @param state pointer to ISR stack frame
+ * @param frame pointer to ISR stack frame
  */
-static void isr_default_handler(kernel::ISRFrame *const state)
+static void isr_default_handler(kernel::ISRFrame *const frame)
 {
-    kernel::panic("*** [ERROR] isr_default_handler: Unhandled Exception\n");
+    kernel::panic("*** [ERROR] isr_default_handler: Unhandled Interrupt [%d]", frame->n);
 }
 
-void kernel::IVT::isr_entry(kernel::ISRFrame *const state)
+void kernel::IVT::isr_entry(kernel::ISRFrame *const frame)
 {
     /** TODO: Stack handling for recursive interrupts */
 
-    if (state->int_num < IVT_MAX_VECTORS)
+    if (frame->n < IVT_MAX_VECTORS)
     {
-        if (vector[state->int_num] != nullptr)
+        if (vector[frame->n] != nullptr)
         {
-            vector[state->int_num](state);
+            vector[frame->n](frame);
         }
         else
         {
-            isr_default_handler(state);
+            isr_default_handler(frame);
         }
     }
     else
     {
-        isr_default_handler(state);
+        isr_default_handler(frame);
     }
 }
 
