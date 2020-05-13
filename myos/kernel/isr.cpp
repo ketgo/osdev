@@ -31,6 +31,7 @@ void kernel::IVT::isr_entry(kernel::ISRFrame *const frame)
         if (vector[frame->n] != nullptr)
         {
             vector[frame->n](frame);
+            isr_exit(frame);
         }
         else
         {

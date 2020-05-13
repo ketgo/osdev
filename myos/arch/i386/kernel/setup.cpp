@@ -31,6 +31,9 @@ void kernel::arch_setup()
     // Setup PICs for hardware interrupts
     I386::PIC::setup();
 
+    // Setup PIT
+    I386::PIT::setup();
+
     /** Enable interupts */
     sti();
 }

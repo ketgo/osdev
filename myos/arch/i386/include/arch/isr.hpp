@@ -8,6 +8,11 @@
 
 #include <stdint.h>
 
+/**
+ * Maximum number of IRQ supported by x86 arch
+ */
+#define IVT_MAX_VECTORS 256
+
 /*
  * Interrupt numbers
  */

@@ -77,7 +77,10 @@
 #include <stdint.h>
 
 /**
- * Maximum number of descriptors in IDT.
+ * Maximum number of descriptors in IDT. 
+ * 
+ * NOTE: This is the same as the maximum number of 
+ *       IRQ supported by x86 arch.
  */
 #define IDT_MAX_DESCRIPTORS 256
 

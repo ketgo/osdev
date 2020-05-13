@@ -14,11 +14,6 @@
 
 #include <arch/isr.hpp>
 
-/**
- * Maximum number of interrupt handlers supported by the kernel
- */
-#define IVT_MAX_VECTORS 256
-
 namespace kernel
 {
     /**
@@ -29,7 +24,7 @@ namespace kernel
      */
     struct __attribute__((packed)) ISRFrame
     {
-        uint32_t n;   // interrupt number to be assigned to ISR
+        uint32_t n; // interrupt number to be assigned to ISR
         ISRArg arg; // arch specific arguments for ISR
     };
 
@@ -47,8 +42,9 @@ namespace kernel
     namespace IVT
     {
         /**
-         * Common interrupt handler entry point having the same signature as an 
-         * interrupt handler.
+         * Common interrupt handler entry point
+         * 
+         * The routine has the same signature as an interrupt handler.
          * 
          * NOTE: Arch specifc code should implementate interrupt entry stubs
          *      redirecting execution to this method.
@@ -56,6 +52,16 @@ namespace kernel
          * @param frame pointer to interrupt stack frame
          */
         void isr_entry(ISRFrame *const frame);
+
+        /**
+         * Common interrupt handler exit 
+         * 
+         * The routine has the same signature as an interrupt handler and
+         * arch specific implementation.
+         * 
+         * @param frame pointer to interrupt stack frame
+         */
+        void __arch isr_exit(ISRFrame *const frame);
 
         /**
          * Register Interrupt Service Routine (ISR) in Interrupt Vector Table (IVT).

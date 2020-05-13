@@ -1,16 +1,17 @@
 #include <stdint.h>
 
 #include <kernel/ioport.hpp>
+#include <kernel/isr.hpp>
 
 #include <i386/pic.hpp>
 
 // Master PIC register port addresses
-#define MASTER_PIC_REG1 0x20 // command and status register
-#define MASTER_PIC_REG2 0x21 // data and interrupt mask register
+#define MASTER_PIC_REG_0 0x20 // command and status register
+#define MASTER_PIC_REG_1 0x21 // data and interrupt mask register
 
 // Slave PIC register port addresses
-#define SLAVE_PIC_REG1 0xA0 // command and status register
-#define SLAVE_PIC_REG2 0xA1 // data and interrupt mask register
+#define SLAVE_PIC_REG_0 0xA0 // command and status register
+#define SLAVE_PIC_REG_1 0xA1 // data and interrupt mask register
 
 // Initialization Control Word 1 bit masks
 #define PIC_ICW1_MASK_IC4 0x1   //00000001	// Expect ICW 4 bit
@@ -75,27 +76,14 @@
 #define PIC_ICW4_SFNM_NOTNESTED 0     //a binary 2
 
 /**
- * Programmable Interrupt Controller class
+ * 8259 Programmable Interrupt Controller
+ * 
+ * @param reg_0 command and status register address
+ * @param reg_1 data and IMR register address
  */
-typedef class PIC
+template <uint8_t reg_0, uint8_t reg_1>
+struct PIC
 {
-private:
-    /**
-     * 8259 command and status register address
-     */
-    uint8_t reg1;
-
-    /**
-     * 8259 data and IMR register address
-     */
-    uint8_t reg2;
-
-public:
-    /**
-     * Constructor
-     */
-    PIC(uint8_t reg1, uint8_t reg2) : reg1(reg1), reg2(reg2) {}
-
     /**
      * Send command to PIC
      * 
@@ -103,7 +91,7 @@ public:
      */
     void send_cmd(uint8_t cmd)
     {
-        return kernel::outb(cmd, reg1);
+        return kernel::outb(cmd, reg_0);
     }
 
     /**
@@ -113,7 +101,7 @@ public:
      */
     uint8_t get_status()
     {
-        return kernel::inb(reg1);
+        return kernel::inb(reg_0);
     }
 
     /**
@@ -123,7 +111,7 @@ public:
      */
     void send_data(uint8_t data)
     {
-        kernel::outb(data, reg2);
+        kernel::outb(data, reg_1);
     }
 
     /**
@@ -133,17 +121,18 @@ public:
      */
     uint8_t read_data()
     {
-        return kernel::inb(reg2);
+        return kernel::inb(reg_1);
     }
-} pic_t;
+};
 
 // Master and slave PIC
-static pic_t m_pic(MASTER_PIC_REG1, MASTER_PIC_REG2);
-static pic_t s_pic(SLAVE_PIC_REG1, SLAVE_PIC_REG2);
+static PIC<MASTER_PIC_REG_0, MASTER_PIC_REG_1> m_pic;
+static PIC<SLAVE_PIC_REG_0, SLAVE_PIC_REG_1> s_pic;
 
 void I386::PIC::setup()
 {
-    uint8_t icw = 0; // initialization control word
+    // initialization control word
+    uint8_t icw = 0;
 
     // Begin initialization of PIC
 
@@ -153,14 +142,17 @@ void I386::PIC::setup()
     m_pic.send_cmd(icw);
     s_pic.send_cmd(icw);
 
-    // Send initialization control word 2. This is the base addresses of the irq's.
-    // Since the first 32 interrupt vectors are reserved in x86 processors, the hardware
-    // interrupts are set from the 32nd vector with each PIC supporting 8 interrupt lines.
-    //
-    // NOTE: The interrupt numbers are consitent with that set in IDT
+    /** 
+     * Send initialization control word 2. This is the base addresses of the ISR in IVT.
+     * Since the first 32 interrupt vectors are reserved in x86 processors, the hardware
+     * interrupts are set from the 32nd vector (ISR_IRQ0) with each PIC supporting 8 
+     * interrupt lines.
+     * 
+     * NOTE: The interrupt numbers are consitent with that set in IDT
+     */
 
-    m_pic.send_data(32);
-    s_pic.send_data(40);
+    m_pic.send_data(ISR_IRQ0);
+    s_pic.send_data(ISR_IRQ0 + 8);
 
     // Send initialization control word 3. This is the connection between master and slave.
     // ICW3 for master PIC is the IR that connects to secondary pic in binary format
@@ -179,42 +171,67 @@ void I386::PIC::setup()
 
 void I386::PIC::mask(uint8_t n)
 {
-    pic_t *pic;
-    uint8_t value;
+/** 
+ * Macro to get the value of interrupt mask register of a PIC 
+ * and mask the nth bit. It then loads the new mask bits in the 
+ * interrupt mask register.
+ */
+#define MASK(pic, n) pic.send_data(pic.read_data() | (1 << n));
 
     // Select the master or slave PIC object depending on the interrupt line to mask.
     if (n < 8)
     {
-        pic = &m_pic;
+        MASK(m_pic, n);
     }
     else
     {
-        pic = &s_pic;
         n -= 8;
+        MASK(s_pic, n);
     }
-    // Get the value of interrupt mask register and mask the nth bit
-    value = pic->read_data() | (1 << n);
-    // Load the new mask value in interrupt mask register
-    pic->send_data(value);
+
+#undef MASK
 }
 
 void I386::PIC::unmask(uint8_t n)
 {
-    pic_t *pic;
-    uint8_t value;
+/** 
+ * Macro to get the value of interrupt mask register of a PIC 
+ * and unmask the nth bit. It then loads the new mask bits in the 
+ * interrupt mask register.
+ */
+#define UNMASK(pic, n) pic.send_data(pic.read_data() & ~(1 << n));
 
     // Select the master or slave PIC object depending on the interrupt line to mask.
     if (n < 8)
     {
-        pic = &m_pic;
+        UNMASK(m_pic, n);
     }
     else
     {
-        pic = &s_pic;
         n -= 8;
+        UNMASK(s_pic, n);
     }
-    // Get the value of interrupt mask register and unmask the nth bit
-    value = pic->read_data() & ~(1 << n);
-    // Load the new mask value in interrupt mask register
-    pic->send_data(value);
+
+#undef UNMASK
+}
+
+void I386::PIC::eoi(uint32_t n)
+{
+    /** 
+     * Check if interrupt is a hardware interrupt. Since any hardware
+     * device interrupt is triggered though PIC, the master and slave 
+     * PIC mapped ISR are checked.
+     */
+    if (n >= ISR_IRQ0)
+    {
+        // Always send EOI to master PIC
+        m_pic.send_cmd(PIC_OCW2_MASK_EOI);
+
+        // Check if salve PIC triggered the interrupt
+        if (n >= ISR_IRQ0 + 8)
+        {
+            // Send EOI to slave PIC
+            s_pic.send_cmd(PIC_OCW2_MASK_EOI);
+        }
+    }
 }

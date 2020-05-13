@@ -37,7 +37,7 @@ namespace I386
          * 
          * This function can be used to disable hardware devices.
          * 
-         * @param n interrupt number to mask
+         * @param n interrupt line to mask
          */
         void mask(uint8_t n);
 
@@ -46,9 +46,18 @@ namespace I386
          * 
          * This function can be used to enable hardware devices.
          * 
-         * @param n interrupt number to unmask
+         * @param n interrupt line to unmask
          */
         void unmask(uint8_t n);
+
+        /**
+         * End Of Interrupt (EOI)
+         * 
+         * This function sends an end of interrupt notification to PICs
+         * 
+         * @param n interrupt number of the triggered interrupt
+         */
+        void eoi(uint32_t n);
 
     } // namespace PIC
 
