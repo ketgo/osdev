@@ -1,3 +1,21 @@
+# Copyright (C) 2020 Ketan Goyal
+# 
+# This file is part of osdev.
+# 
+# osdev is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# osdev is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with osdev.  If not, see <http://www.gnu.org/licenses/>.
+
+
 # ----------------
 # 	OS Makefile
 #
@@ -53,7 +71,11 @@ ifneq (,$(findstring elf,${HOST}))
   export CPP:=${CPP} -isystem=${INCLUDEDIR}
 endif
 
-.PHONEY: build clean run
+.PHONEY: build clean remove run
+
+#-----------------------------------
+# Kernel Build
+#-----------------------------------
 
 # Build kernal
 build: install-headers
@@ -72,7 +94,14 @@ clean:
 	for PROJECT in ${PROJECTS}; do \
 	cd $$PROJECT; ${MAKE} clean; \
 	done
+
+# Remove
+remove: clean
 	rm -rf ${BUILD_DIR}
+
+#-------------------------------------------
+# Build OS boot image
+#------------------------------------------
 
 # Install grub
 grub: build
@@ -83,6 +112,10 @@ grub: build
 grub-iso: grub
 	mkdir -p ${OS_IMG_DIR}
 	/usr/local/Cellar/i386-elf-grub/2.04/bin/i386-elf-grub-mkrescue -o ${OS_IMG_DIR}/myos.iso ${SYSROOT}
+
+#-----------------------------------------
+# Run OS
+#----------------------------------------
 
 # Run kernel binaries on QEMU
 qemu-run-bin: ${KERNEL_BUILD_DIR}/myos.bin

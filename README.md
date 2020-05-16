@@ -13,7 +13,7 @@ The following dependencies need to be installed for building and development:
 
 ### Building and Running
 
-Once all prereqisits have been installed, the `make` utility can be used to build and run project.
+Once all prerequisites have been installed, the `make` utility can be used to build and run project.
 
 - To run OS on Emulator. This will auto-builds the kernel image and load it on Emulator:
   ```bash
@@ -28,11 +28,11 @@ Once all prereqisits have been installed, the `make` utility can be used to buil
   $ make clean
   ```
 
-The build process creates a `build\<target>` directoy where all header files, libraries and kernel image are placed appropriatly. Thus this directory acts as our OS root using which an OS image is created. The `<target>` here refers to the CPU arch for which the kernel is being built. 
+The build process creates a `build\<target>` directory where all header files, libraries and kernel image are placed appropriately. Thus this directory acts as our OS root using which an OS image is created. The `<target>` here refers to the CPU arch for which the kernel is being built. 
 
 ### Debugging
 
-There are couple of ways to debug the kernel. One is using the cross-compiled `gdb` utility (e.g. i386-elf-gdb), the other is using the internal debugger of Bochs enmulator.
+There are couple of ways to debug the kernel. One is using the cross-compiled `gdb` utility (e.g. i386-elf-gdb), the other is using the internal debugger of Bochs emulator.
 
 ## Development Tasks
 
