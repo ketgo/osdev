@@ -1,8 +1,8 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdarg.h>
-#include <cstring>
-#include <cstdio>
+#include <string.h>
+#include <stdio.h>
 
 #include <kernel/ioport.hpp>
 #include <kernel/console.hpp>
@@ -70,10 +70,10 @@ int kernel::Console::putchar(int c)
 int kernel::Console::vprintf(const char *s, va_list args)
 {
     int written = 0;
-    size_t size = std::strlen(s);
+    size_t size = strlen(s);
     char buff[size];
 
-    std::vsnprintf(buff, size, s, args);
+    vsnprintf(buff, size, s, args);
 
     for (size_t i = 0; i < size; i++)
     {

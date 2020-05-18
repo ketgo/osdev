@@ -15,3 +15,40 @@
 # You should have received a copy of the GNU General Public License
 # along with osdev.  If not, see <http://www.gnu.org/licenses/>.
 
+# ----------------------
+#	Libc Makefile
+#
+#	- Ketan Goyal
+# ----------------------
+
+# Targeted CPU arch
+TARGET?=
+
+# Host
+HOST?=
+
+# Default build directory
+BUILD_DIR?=buid
+
+# Installation destination
+DESTDIR?=
+
+# Libc build directory
+LIBC_BUILD_DIR:=${BUILD_DIR}/libc
+
+.PHONY: install-headers install clean
+
+install:
+	cd ${LIBC_BUILD_DIR} && \
+	AR="" AS="" CC="" CPP="" ${CURDIR}/configure --prefix=/usr --target=${HOST} && \
+	${MAKE} && \
+	${MAKE} DESTDIR=${DESTDIR} install;
+	cp -apR ${DESTDIR}/usr/${HOST}/* ${DESTDIR}/usr/;
+	rm -rf ${DESTDIR}/usr/${HOST}
+
+# Nothing to do
+install-headers:
+	mkdir -p ${LIBC_BUILD_DIR}
+
+clean:
+	rm -rf ${LIBC_BUILD_DIR}

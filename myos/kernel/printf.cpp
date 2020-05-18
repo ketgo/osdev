@@ -1,6 +1,6 @@
 #include <stdarg.h>
 #include <stddef.h>
-#include <cstdio>
+#include <stdio.h>
 
 #include <kernel/tty.hpp>
 #include <kernel/printf.hpp>
@@ -15,7 +15,7 @@ void kernel::vprintf(const char *fmt, va_list args)
     char str[KPRINTF_BUFSIZ];
     int n;
 
-    n = std::vsnprintf(str, KPRINTF_BUFSIZ, fmt, args);
+    n = vsnprintf(str, KPRINTF_BUFSIZ, fmt, args);
     if (n > 0)
         kernel::tty.write(str, (size_t)n);
 }

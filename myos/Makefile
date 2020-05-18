@@ -33,8 +33,7 @@ LIBS?=
 # Installation directory
 DESTDIR?=
 PREFIX?=/usr/local
-EXEC_PREFIX?=$(PREFIX)
-BOOTDIR?=$(EXEC_PREFIX)/boot
+BOOTDIR?=$(PREFIX)/boot
 INCLUDEDIR?=$(PREFIX)/include
 
 # Kernel specific source code directory
@@ -52,13 +51,13 @@ ASM=nasm
 AFLAG=-felf32
 
 # C++ complier flags
-CPPFLAGS:=$(CPPFLAGS) -D__is_kernel -Iinclude -I${ARCHDIR}/include -Ilibc/include -fno-rtti
+CPPFLAGS:=$(CPPFLAGS) -D__is_kernel -I${ARCHDIR}/include -fno-rtti
 # C compiler flags
 CFLAGS:=$(CFLAGS) -ffreestanding -Wall -Wextra -fno-exceptions
 # Linker flags
 LDFLAGS:=$(LDFLAGS)
 # List of libraries
-LIBS:=$(LIBS) -nostdlib -lk
+LIBS:=$(LIBS) -nostdlib -lc -lg -lm -lnosys
 
 # Include arch specific config
 include $(ARCHDIR)/make.config
