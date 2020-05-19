@@ -53,11 +53,11 @@ AFLAG=-felf32
 # C++ complier flags
 CPPFLAGS:=$(CPPFLAGS) -D__is_kernel -I${ARCHDIR}/include -fno-rtti
 # C compiler flags
-CFLAGS:=$(CFLAGS) -ffreestanding -Wall -Wextra -fno-exceptions
+CFLAGS:=$(CFLAGS) -ffreestanding -Wall -Wextra -fno-exceptions -mno-red-zone
 # Linker flags
 LDFLAGS:=$(LDFLAGS)
 # List of libraries
-LIBS:=$(LIBS) -nostdlib -lc -lg -lm -lnosys
+LIBS:=$(LIBS) -nostdlib -lgcc -lc -lg -lm -lnosys
 
 # Include arch specific config
 include $(ARCHDIR)/make.config

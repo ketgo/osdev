@@ -46,7 +46,6 @@ install:
 	cp -apR ${DESTDIR}/usr/${HOST}/* ${DESTDIR}/usr/;
 	rm -rf ${DESTDIR}/usr/${HOST}
 
-# Nothing to do
 install-headers:
 	mkdir -p ${LIBC_BUILD_DIR}
 
