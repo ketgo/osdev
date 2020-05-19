@@ -11,6 +11,13 @@ The following dependencies need to be installed for building and development:
 - C cross-compiler: i386-elf-binutils, i386-elf-gcc, i386-elf-gdb
 - x86 PC enumerator: [QEMU](https://www.qemu.org/docs/master/qemu-doc.html#QEMU-PC-System-emulator), [bochs](http://bochs.sourceforge.net/)
 
+# NewLib
+
+The directory `newlib` contains the [Newlib](https://sourceware.org/newlib/) source code which 
+is used to port a standard C lib for building OS applications. It is also used to generate 
+no-host version of the lib which is used by the kernel for some OS independent standard string 
+and memory manipulation functions.
+
 ### Building and Running
 
 Once all prerequisites have been installed, the `make` utility can be used to build and run project.
