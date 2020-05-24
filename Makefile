@@ -11,10 +11,9 @@
 export HOST:=i386-elf
 export TARGET:=i386
 
-SRC_DIR=${CURDIR}/myos
 BUILD_DIR:=${CURDIR}/build/${TARGET}
-SYSTEM_HEADER_PROJECTS:=${SRC_DIR}/libc ${SRC_DIR}
-PROJECTS:=${SRC_DIR}/libc ${SRC_DIR}
+SYSTEM_HEADER_PROJECTS:=${CURDIR}/libc ${CURDIR}/myos
+PROJECTS:=${CURDIR}/libc ${CURDIR}/myos
 
 # OS image build directoy
 OS_IMG_DIR=${BUILD_DIR}/img

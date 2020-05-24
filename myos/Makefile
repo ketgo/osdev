@@ -35,9 +35,9 @@ ASM=nasm
 AFLAG=-felf32
 
 # C++ complier flags
-CPPFLAGS:=$(CPPFLAGS) -D__is_kernel -Iinclude -I${ARCHDIR}/include -Ilibc/include -fno-rtti
+CPPFLAGS:=$(CPPFLAGS) -D__is_kernel -Iinclude -I${ARCHDIR}/include -fno-rtti
 # C compiler flags
-CFLAGS:=$(CFLAGS) -ffreestanding -Wall -Wextra -fno-exceptions
+CFLAGS:=$(CFLAGS) -ffreestanding -Wall -Wextra -fno-exceptions -mno-red-zone
 # Linker flags
 LDFLAGS:=$(LDFLAGS)
 # List of libraries
