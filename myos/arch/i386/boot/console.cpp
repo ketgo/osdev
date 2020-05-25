@@ -1,8 +1,8 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdarg.h>
-#include <cstring>
-#include <cstdio>
+#include <string.h>
+#include <stdio.h>
 
 #include <kernel/ioport.hpp>
 #include <kernel/console.hpp>

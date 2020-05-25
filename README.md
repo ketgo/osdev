@@ -11,9 +11,16 @@ The following dependencies need to be installed for building and development:
 - C cross-compiler: i386-elf-binutils, i386-elf-gcc, i386-elf-gdb
 - x86 PC enumerator: [QEMU](https://www.qemu.org/docs/master/qemu-doc.html#QEMU-PC-System-emulator), [bochs](http://bochs.sourceforge.net/)
 
+# NewLib
+
+The directory `newlib` contains the [Newlib](https://sourceware.org/newlib/) source code which 
+is used to port a standard C lib for building OS applications. It is also used to generate 
+no-host version of the lib which is used by the kernel for some OS independent standard string 
+and memory manipulation functions.
+
 ### Building and Running
 
-Once all prereqisits have been installed, the `make` utility can be used to build and run project.
+Once all prerequisites have been installed, the `make` utility can be used to build and run project.
 
 - To run OS on Emulator. This will auto-builds the kernel image and load it on Emulator:
   ```bash
@@ -28,11 +35,11 @@ Once all prereqisits have been installed, the `make` utility can be used to buil
   $ make clean
   ```
 
-The build process creates a `build\<target>` directoy where all header files, libraries and kernel image are placed appropriatly. Thus this directory acts as our OS root using which an OS image is created. The `<target>` here refers to the CPU arch for which the kernel is being built. 
+The build process creates a `build\<target>` directory where all header files, libraries and kernel image are placed appropriately. Thus this directory acts as our OS root using which an OS image is created. The `<target>` here refers to the CPU arch for which the kernel is being built. 
 
 ### Debugging
 
-There are couple of ways to debug the kernel. One is using the cross-compiled `gdb` utility (e.g. i386-elf-gdb), the other is using the internal debugger of Bochs enmulator.
+There are couple of ways to debug the kernel. One is using the cross-compiled `gdb` utility (e.g. i386-elf-gdb), the other is using the internal debugger of Bochs emulator.
 
 ## Development Tasks
 

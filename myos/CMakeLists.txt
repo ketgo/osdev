@@ -46,13 +46,14 @@ target_include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/arch/${CMAKE_SYSTEM_PROCESSOR}/include
     ${CMAKE_CURRENT_SOURCE_DIR}/../libc/include
 )
+target_include_directories(myos.kernel SYSTEM PUBLIC ${CMAKE_SYSROOT}/usr/include)
 
 # Set compiler flags
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${KERNEL_GENERIC_C_FLAGS} ${KERNEL_ARCH_C_FLAGS}")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${KERNEL_GENERIC_CXX_FLAGS} ${KERNEL_ARCH_CXX_FLAGS}")
 
 # Set linker options
-target_link_libraries(myos.kernel libk.a)
+target_link_libraries(myos.kernel libk.a libm.a libg.a libnosys.a)
 target_link_options(myos.kernel PRIVATE -nostdlib -lgcc)
 
 install(
