@@ -33,13 +33,9 @@ file(
 # Set all kernel source files
 add_executable(
     myos.kernel     # Target: Kernel image name
-    #${CRTI_SOURCES} 
-    #${CRTBEGIN_SOURCES} 
     ${KERNEL_GENERIC_SOURCES} 
     ${KERNEL_ARCH_SOURCES} 
     ${KERNEL_DRIVERS_SOURCES} 
-    #${CRTEND_SOURCES}
-    #${CRTN_SOURCES}
 )
 
 # Set global header file paths
@@ -57,7 +53,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${KERNEL_GENERIC_CXX_FLAGS} ${KERNEL_ARC
 
 # Set linker options
 target_link_libraries(myos.kernel libk.a)
-target_link_options(myos.kernel PRIVATE -T ${LINKER_SCRIPT} -nostdlib -lgcc)
+target_link_options(myos.kernel PRIVATE -nostdlib -lgcc)
 
 install(
     TARGETS myos.kernel 

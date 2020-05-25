@@ -16,5 +16,5 @@ file(
 set(KERNEL_ARCH_SOURCES ${ARCH_SOURCES} PARENT_SCOPE)
 
 # Set arch specific compiler flags
-set(KERNEL_ARCH_C_FLAGS "-mno-red-zone")
-set(KERNEL_ARCH_CXX_FLAGS "-mno-red-zone")
+set(KERNEL_ARCH_C_FLAGS "-mno-red-zone" PARENT_SCOPE)
+set(KERNEL_ARCH_CXX_FLAGS "-mno-red-zone" PARENT_SCOPE)
