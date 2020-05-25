@@ -3,4 +3,4 @@
 [drive]
   media = "disk"
   index = "0"
-  file = "./build/i386/img/myos.iso"
+  file = "./${CMAKE_SYSTEM_PROCESSOR}/myos.iso"

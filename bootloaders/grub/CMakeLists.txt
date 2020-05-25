@@ -1,0 +1,11 @@
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8.0)
+
+include(ExternalProject)
+ExternalProject_Add(
+    grub
+    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND ""
+    INSTALL_DIR ${CMAKE_SYSROOT}/boot/grub
+    INSTALL_COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/grub.cfg ${CMAKE_SYSROOT}/boot/grub
+)
