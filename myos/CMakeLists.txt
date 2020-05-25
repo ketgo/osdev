@@ -24,8 +24,9 @@ file(
     ${CMAKE_CURRENT_SOURCE_DIR}/drivers/*.c
 )
 
+# Set all kernel source files
 add_executable(
-    kernel 
+    myos.kernel     # Target: Kernel image name
     ${CRTI_SOURCES} 
     ${CRTBEGIN_SOURCES} 
     ${KERNEL_GENERIC_SOURCES} 
@@ -35,19 +36,24 @@ add_executable(
     ${CRTN_SOURCES}
 )
 
-# Add global headers
+# Set global header file paths
 target_include_directories(
-    kernel 
+    myos.kernel 
     PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${CMAKE_CURRENT_SOURCE_DIR}/arch/${CMAKE_SYSTEM_PROCESSOR}/include
     ${CMAKE_CURRENT_SOURCE_DIR}/../libc/include
 )
 
-# Set kernel specific compiler flags
+# Set compiler flags
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${KERNEL_GENERIC_C_FLAGS} ${KERNEL_ARCH_C_FLAGS}")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${KERNEL_GENERIC_CXX_FLAGS} ${KERNEL_ARCH_CXX_FLAGS}")
 
-# Link library
-target_link_libraries(kernel libk.a)
-target_link_options(kernel PRIVATE -T ${LINKER_SCRIPT} -nostdlib -lgcc)
+# Set linker options
+target_link_libraries(myos.kernel libk.a)
+target_link_options(myos.kernel PRIVATE -T ${LINKER_SCRIPT} -nostdlib -lgcc)
+
+install(
+    TARGETS myos.kernel 
+    RUNTIME DESTINATION ${CMAKE_SYSROOT}/boot
+)

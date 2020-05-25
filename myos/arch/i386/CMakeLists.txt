@@ -15,6 +15,10 @@ file(
 )
 set(KERNEL_ARCH_SOURCES ${ARCH_SOURCES} PARENT_SCOPE)
 
+#--------------------------------------
+# TODO: Move all this to toolchain file
+#--------------------------------------
+
 # Ctor start files
 set(CRTI_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/crti.S PARENT_SCOPE)
 set(CRTN_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/crtn.S PARENT_SCOPE)
@@ -32,6 +36,8 @@ set_source_files_properties(
     EXTERNAL_OBJECT true
     GENERATED true
 )
+
+#--------------------------------------
 
 # Linker script file
 set(LINKER_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/linker.ld PARENT_SCOPE)
