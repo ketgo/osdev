@@ -15,6 +15,12 @@ set(KERNEL_GENERIC_CXX_FLAGS "-ffreestanding -Wall -Wextra -fno-exceptions -fno-
 
 # Get arch-specific source files to compile
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/arch/${CMAKE_SYSTEM_PROCESSOR})
+set_source_files_properties(
+    ${CRTBEING_SOURCES} ${CRTEND_SOURCES}
+    PROPERTIES
+    EXTERNAL_OBJECT true
+    GENERATED true
+)
 
 # Get in-kernel device drivers source files
 file(
@@ -27,13 +33,13 @@ file(
 # Set all kernel source files
 add_executable(
     myos.kernel     # Target: Kernel image name
-    ${CRTI_SOURCES} 
-    ${CRTBEGIN_SOURCES} 
+    #${CRTI_SOURCES} 
+    #${CRTBEGIN_SOURCES} 
     ${KERNEL_GENERIC_SOURCES} 
     ${KERNEL_ARCH_SOURCES} 
     ${KERNEL_DRIVERS_SOURCES} 
-    ${CRTBEND_SOURCES}
-    ${CRTN_SOURCES}
+    #${CRTEND_SOURCES}
+    #${CRTN_SOURCES}
 )
 
 # Set global header file paths
