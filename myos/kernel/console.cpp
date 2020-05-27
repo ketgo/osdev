@@ -71,9 +71,9 @@ int kernel::Console::vprintf(const char *s, va_list args)
 {
     int written = 0;
     size_t size = strlen(s);
-    char buff[size];
+    char buff[size+1];
 
-    vsnprintf(buff, size, s, args);
+    vsnprintf(buff, size+1, s, args);
 
     for (size_t i = 0; i < size; i++)
     {
